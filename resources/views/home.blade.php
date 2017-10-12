@@ -7,9 +7,9 @@
 
     <div class="container-fluid">
 
-      <h2>Master List</h2>
-        <table class="datatable mdl-data-table__cell--non-numeric table-hover" cellspacing="0"
-            width="100%" role="grid" style="width: 100%;">
+      <h2>Current Loans Master List</h2>
+        <table class="datatable table mdl-data-table__cell--non-numeric table-hover" cellspacing="0"
+            width="100%" role="grid" style="width: 100% !important; font-size: 12px;">
             <thead class="thead-inverse">
                 <tr>                    
                     <th>#</th>
@@ -22,7 +22,7 @@
                     <th>Deduction Amount</th>
                     <th>Term Type</th>
                     <th>Term</th>
-                    <th>Loan Status</th>
+                    {{-- <th>Loan Status</th> --}}
                     <th>Cash Advance Status</th>
                 </tr>
             </thead>
@@ -40,6 +40,7 @@
 
             // Instantiate the server side DataTable
             $('.datatable').DataTable({
+                "autoWidth": true,
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -66,14 +67,29 @@
                     { "data": "deduction", "name" : "loans.deduction" }, 
                     { "data": "term_type", "name" : "term_type.name" },
                     { "data": "term", "name" : "loans.term" },                 
-                    { "data": "loan_status", "name" : "loan_status.name" },                  
+                    // { "data": "loan_status", "name" : "loan_status.name" },                  
                     { "data": "cash_advance_status", "name" : "cash_advance_status.name" }
                 ],
                 "fnRowCallback" : function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                    var id = aData.id;
-                    $(nRow).attr("data-loan-id", id);
+                    if(aData != null)
+                    {
+                        var id = aData.id;
+
+                        var loanAmount = aData.amount;
+                        var interestedAmount = aData.interested_amount;
+                        var deductionAmount = aData.deduction;
+                        var percentage = aData.percentage;
+
+                        $(nRow).attr("data-loan-id", id);
+                        $(nRow).find("td:nth-child(5)").html("{{ peso() }}" + (+loanAmount).toFixed(2));
+                        $(nRow).find("td:nth-child(6)").html("{{ peso() }}" + (+interestedAmount).toFixed(2));
+                        $(nRow).find("td:nth-child(7)").html(percentage + "%");
+                        $(nRow).find("td:nth-child(8)").html("{{ peso() }}" + (+deductionAmount).toFixed(2));
+                    }
+                    
                     return nRow;
-                }  
+                },
+                "pageLength" : 8  
             });
 
             // Instantiate the DatePicker Plugin 
@@ -159,6 +175,7 @@
               location.reload(true);
             });
 
+            // Listens for updates from the server and redraws the datatable
             Echo.private(`loanMasterListChannel`)
             .listen('Remittance', (e) => {
                 // console.log(e);

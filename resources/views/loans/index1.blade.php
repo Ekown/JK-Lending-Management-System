@@ -60,8 +60,8 @@
 			<span class="badge" id="loan_status">{{ $details->first()->loan_status }}</span>
 		  </li>
 		  <li class="list-group-item border-0"><b>Loan Percentage:</b> {{ $details->first()->percentage }}%</li>
-		  <li class="list-group-item border-0"><b>Loan Amount:</b> {{ number_format($details->first()->amount, 2) }}</li>
-		  <li class="list-group-item border-0"><b>Interested Amount:</b> {{ number_format($details->first()->interested_amount, 2) }}</li>
+		  <li class="list-group-item border-0"><b>Loan Amount:</b> {{ peso().number_format($details->first()->amount, 2) }}</li>
+		  <li class="list-group-item border-0"><b>Interested Amount:</b> {{ peso().number_format($details->first()->interested_amount, 2) }}</li>
 		</ul>
 
 		<div class="col-md-9">
@@ -140,7 +140,7 @@
                     if(aData != null)
                     {
                       var amount = aData.amount;
-                      $(nRow).find("td:nth-child(3)").html((+amount).toFixed(2));
+                      $(nRow).find("td:nth-child(3)").html("{{ peso() }}" + (+amount).toFixed(2));
                       console.log(nRow);
                       return nRow;
                     }
@@ -179,10 +179,10 @@
                     {
                       // Redraw the footer with the updated draw data
                       $( api.table().footer() ).find('th').eq(0).html( "Total Remittance Amount: ");
-                      $( api.table().footer() ).find('th').eq(1).html(remittances.toFixed(2));
+                      $( api.table().footer() ).find('th').eq(1).html("{{ peso() }}" + remittances.toFixed(2));
                     }
                       $( api.table().footer() ).find('th').eq(2).html( "Total Remaining Balance: ");
-                      $( api.table().footer() ).find('th').eq(3).html(res.toFixed(2));
+                      $( api.table().footer() ).find('th').eq(3).html("{{ peso() }}" + res.toFixed(2));
                     
                   
                 },

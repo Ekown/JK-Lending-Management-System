@@ -4,6 +4,14 @@
   color: white;
 }
 
+.container-fluid {
+  margin-left: -10px !important;
+}
+
+#totalSumColumn {
+  padding-left: 10px !important;
+}
+
 #loginFormHead,
 #resetPasswordHead,
 #registerFormHead {

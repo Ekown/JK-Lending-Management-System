@@ -60,12 +60,12 @@
 			<span class="badge" id="loan_status">{{ $details->first()->loan_status }}</span>
 		  </li>
 		  <li class="list-group-item border-0"><b>Loan Percentage:</b> {{ $details->first()->percentage }}%</li>
-		  <li class="list-group-item border-0"><b>Loan Amount:</b> {{ $details->first()->amount }}</li>
-		  <li class="list-group-item border-0"><b>Interested Amount:</b> {{ $details->first()->interested_amount }}</li>
+		  <li class="list-group-item border-0"><b>Loan Amount:</b> {{ number_format($details->first()->amount, 2) }}</li>
+		  <li class="list-group-item border-0"><b>Interested Amount:</b> {{ number_format($details->first()->interested_amount, 2) }}</li>
 		</ul>
 
 		<div class="col-md-9">
-			<table class="datatable table-hover" cellspacing="0" role="grid" style="width:100%">
+			<table class="datatable table table-hover" cellspacing="0" role="grid" style="width:100%">
 				<thead class="thead-inverse">
 					<tr>
 						<th>#</th>
@@ -75,6 +75,16 @@
 				</thead>
 				<tbody>
 				</tbody>
+        <tfoot>
+          <tr>
+            <th colspan="2"></th>
+            <th id="totalSumColumn"></th>
+          </tr>
+          <tr >
+            <th colspan="2" style="border: none !important"></th>
+            <th id="totalSumColumn" style="border: none !important"></th>
+          </tr>
+        </tfoot>
 			</table>
 		</div>
 	</div>
@@ -125,12 +135,62 @@
                     { "data": "id", "name" : "loan_remittances.id" },
                     { "data": "date", "name" : "loan_remittances.date" },
                     { "data": "amount", "name" : "loan_remittances.amount" }
-                ]
-                // "fnRowCallback" : function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                //     var id = aData.id;
-                //     $(nRow).attr("data-loan-id", id);
-                //     return nRow;
-                // }  
+                ],
+                "fnRowCallback" : function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                    if(aData != null)
+                    {
+                      var amount = aData.amount;
+                      $(nRow).find("td:nth-child(3)").html((+amount).toFixed(2));
+                      console.log(nRow);
+                      return nRow;
+                    }
+                      
+                },
+                "drawCallback": function (settings) {
+                    // Get the DataTable API instance
+                    var api = this.api();
+
+                    var balance = {{ $loanBalance->first()->interested_amount }};
+                    var res = null;
+
+                    var remittances = function() {
+                      var tmp = null;
+                      $.ajax({
+                          'async': false,
+                          'type': "POST",
+                          'global': false,
+                          'url': "/loan/" + {{ $details->first()->id }} + "/remittances/sum",
+                          'success': function (data) {
+                              tmp = data[0].sum;
+                              console.log(data[0].sum);
+                          }
+                      });
+                      return tmp;
+                    }();
+
+                    // if (balance <= remittances)
+                    //   res = 0;
+                    // else
+                    //   res = balance - remittances;
+
+                    res = balance - remittances;
+
+                    if(remittances != null)
+                    {
+                      // Redraw the footer with the updated draw data
+                      $( api.table().footer() ).find('th').eq(0).html( "Total Remittance Amount: ");
+                      $( api.table().footer() ).find('th').eq(1).html(remittances.toFixed(2));
+                    }
+                      $( api.table().footer() ).find('th').eq(2).html( "Total Remaining Balance: ");
+                      $( api.table().footer() ).find('th').eq(3).html(res.toFixed(2));
+                    
+                  
+                },
+                "pageLength": 7
+                // "footerCallback": function( tfoot, data, start, end, display ) {
+                //   $(tfoot).find('th').eq(0).html( "Total Remittance Amount: ");
+                //   $(tfoot).find('th').eq(1).html({{ $totalRemittances->first()->sum }});
+                // } 
             });
 
             $('.datepicker').datepicker();

@@ -87,7 +87,8 @@ Route::post('get/borrowers_by_company', 'BorrowerController@getBorrowersByCompan
 // AJAX request for getting loan remittances by loan
 Route::post('loan/{loan}/remittances', 'DatatableController@showLoanRemittances');
 
-
+// AJAX request for getting loan remittances by loan
+Route::post('loan/{loan}/remittances/sum', 'LoanController@readTotalRemittance');
 
 
 // TEst for Pusher

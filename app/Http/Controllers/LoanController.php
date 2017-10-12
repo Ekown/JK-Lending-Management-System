@@ -17,10 +17,7 @@ class LoanController extends Controller
     public function show($loan)
     {
         // If the loan is fully paid, change the loan status to fully paid
-        $totalRemittances = DB::table('loan_remittances')
-                            ->selectRaw('SUM(loan_remittances.amount) as sum')
-                            ->where('loan_remittances.loan_id', $loan)
-                            ->get();
+        $totalRemittances = $this->readTotalRemittance($loan);
 
         $loanBalance = DB::table('loans')
                         ->select('loans.interested_amount')
@@ -34,7 +31,7 @@ class LoanController extends Controller
 
         $details = $this->getLoanDetails($loan);
 
-    	return view('loans.index1')->with('details', $details);
+    	return view('loans.index1')->with('details', $details)->with('totalRemittances', $totalRemittances)->with('loanBalance', $loanBalance);
     }
 
     private function getLoanDetails($loan_id)
@@ -51,6 +48,14 @@ class LoanController extends Controller
                     ->get();
 
     	return $query;
+    }
+
+    public function readTotalRemittance($loan)
+    {
+        return DB::table('loan_remittances')
+               ->selectRaw('SUM(loan_remittances.amount) as sum')
+               ->where('loan_remittances.loan_id', $loan)
+               ->get();
     }
 
     // Updates the Loan Status in the Loan Table in the database

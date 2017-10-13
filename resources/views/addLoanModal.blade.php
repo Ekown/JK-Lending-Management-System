@@ -50,6 +50,10 @@
                         <label for="addLoanAmount1" class="form-control-label">Loan Amount:</label>
                         <input type="number" name="addLoanAmount1" class="form-control">
                       </div>
+                      <div class="form-group col">
+                         <label for="addBorrowerPercentage1" class="form-control-label">Percentage:</label>
+                         <input type="number" class="form-control" id="addBorrowerPercentage1" name="       addBorrowerPercentage1">
+                       </div>
                     </div>
                   <div class="row">
                       <div class="form-group col">
@@ -67,8 +71,12 @@
                          <input type="number" class="form-control" id="addBorrowerTerm1" name="     addBorrowerTerm1">
                        </div>
                        <div class="form-group col">
-                         <label for="addBorrowerPercentage1" class="form-control-label">Percentage:</label>
-                         <input type="number" class="form-control" id="addBorrowerPercentage1" name="       addBorrowerPercentage1">
+                         <label for="addRemittanceDate1" class="form-control-label">Remittance Date:</label>
+                         <select class="form-control" id="addRemittanceDate1" name="addRemittanceDate1">
+                          @foreach ($remittanceDates as $date)
+                              <option value="{{ $date->id }}">{{ $date->remittance_date }}</option>
+                          @endforeach
+                          </select>
                        </div>
                     </div>
                 </form>      
@@ -103,6 +111,10 @@
                         <label for="addLoanAmount2" class="form-control-label">Loan Amount:</label>
                         <input type="number" name="addLoanAmount2" class="form-control">
                       </div>
+                      <div class="form-group col">
+                         <label for="addBorrowerPercentage2" class="form-control-label">Percentage:</label>
+                         <input type="number" class="form-control" id="addBorrowerPercentage2" name="addBorrowerPercentage2">
+                       </div>
                     </div>
                   <div class="row">
                       <div class="form-group col">
@@ -118,8 +130,12 @@
                          <input type="number" class="form-control" id="addBorrowerTerm2" name="     addBorrowerTerm2">
                        </div>
                        <div class="form-group col">
-                         <label for="addBorrowerPercentage2" class="form-control-label">Percentage:</label>
-                         <input type="number" class="form-control" id="addBorrowerPercentage2" name="addBorrowerPercentage2">
+                         <label for="addRemittanceDate2" class="form-control-label">Remittance Date:</label>
+                         <select class="form-control" id="addRemittanceDate2" name="addRemittanceDate2">
+                            @foreach ($remittanceDates as $date)
+                              <option value="{{ $date->id }}">{{ $date->remittance_date }}</option>
+                            @endforeach
+                          </select>
                        </div>
                     </div>
                 </form>  

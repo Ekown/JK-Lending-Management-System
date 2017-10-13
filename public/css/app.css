@@ -114,3 +114,8 @@ h1 {
   color: red;
 }
 
+.loan-details li {
+  padding-top: 7.5px;
+  padding-bottom: 7.5px;
+}
+

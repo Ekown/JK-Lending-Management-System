@@ -40,7 +40,7 @@
 <div class="container">
 	<h2>Loan Details</h2>
 
-	<div class="row ">
+	<div class="row loan-details">
 		<ul class="list-group col-md-3">
 		  <li class="list-group-item border-0"><b>Loan ID:</b> {{ $details->first()->id }}</li>
 		  <li class="list-group-item border-0"><b>Date of Loan:</b> {{ $details->first()->created_at }}</li>
@@ -54,6 +54,9 @@
 					{{ "give/s" }}
 				@endif
 		  </li>
+      <li class="list-group-item border-0">
+        <b>Remittance Date:</b> {{ $details->first()->remittance_date }}
+      </li>
 		  <li class="list-group-item border-0"><hr></li>
 		  <li class="list-group-item border-0">
 		  	<b>Loan Status:</b> 
@@ -120,7 +123,8 @@
                 serverSide: true,
                 ajax: {
                     method : "POST",
-                    url : "/loan/" + {{ $details->first()->id }} + "/remittances"            
+                    url : "/loan/" + {{ $details->first()->id }} + "/remittances",
+                    async: false            
                 },
                 dom: 'Bfrtip',
                 buttons: [

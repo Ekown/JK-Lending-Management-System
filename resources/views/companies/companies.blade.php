@@ -3,11 +3,16 @@
 @section ('content')
 	<h2>{{ $company }}</h2>
 
+    <select id="remittanceDateSelector">
+        
+    </select>
+
 	<div class="container-fluid">
         <table class="datatable table-hover" cellspacing="0" width="100%" role="grid" style="width: 100%;">
             <thead class="thead-inverse">
                 <tr>                    
                     <th>Name</th>
+                    <th>Remittance Dates</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,7 +33,11 @@
                 ajax: {
                     method : "POST",
                     data : { selectedCompany : "{{ $company }}" },  
-                    url : "{{ route('getBorrowersByCompany') }}"             
+                    url : "{{ route('getBorrowersByCompany') }}",
+                    async: false             
+                },
+                initComplete: function () {
+                    console.log(this.api().data()[2].remittance_dates);
                 },
                 // dom: 'Bfrtip',
                 // buttons: [
@@ -40,14 +49,17 @@
                 //     }
                 // ],
                 "columns": [
-                    { "data": "name", "name" : "borrowers.name" }
+                    { "data": "name", "name" : "name" },
+                    { "data": "remittance_dates", "name" : "remittance_dates" }
                 ]
                 // "fnRowCallback" : function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 
                 //     var id = aData.company_name;
                 //     $(nRow).attr("data-company-name", id);
                 //     return nRow;
-                // } 
+                // }, 
+                
+  
             });
 
 		});

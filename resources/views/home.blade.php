@@ -45,7 +45,8 @@
                 serverSide: true,
                 ajax: {
                     method : "POST",
-                    url : "{{ route('masterList') }}"             
+                    url : "{{ route('masterList') }}",
+                    async: false             
                 },
                 dom: 'Bfrtip',
                 buttons: [

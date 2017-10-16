@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\RemittanceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
@@ -32,12 +33,16 @@ class CompanyController extends Controller
     }
 
     // Show the companies
-    public function show($company = null)
+    public function show($company = null, $date = null)
     {
-        if ($company == null)
+        if ($company == null && $date == null)
             return view('companies.index');
-        else
-            return view('companies.companies', compact('company'));
+        elseif ($company != null && $date != null)
+        {
+            $remittanceDates = (new RemittanceController)->getDates();
+
+            return view('companies.companies')->with('company', $company)->with('dates', $remittanceDates)->with('remitDate', $date);
+        }
     }
 
     

@@ -31,6 +31,7 @@ class BorrowerController extends Controller
     // Get the borrowers for each company
     public function getBorrowersByCompany(Request $request)
     {
+        // For the borrowers dropdown in add loan modal
         if (is_numeric($request->selectedCompany))
         {
             $query = DB::table('borrowers')
@@ -41,16 +42,42 @@ class BorrowerController extends Controller
 
             return Response::json($query);
         }
-        else
+
+        // For the Company List
+        elseif($request->remittanceDate == "master")
         {
-            $query = DB::table('borrowers')
+            $query = DB::table('loans')
+                    ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
                     ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
+                    ->leftJoin('remittance_dates', 'loans.remittance_date_id', '=', 'remittance_dates.id')
                     ->where('companies.name', '=', $request->selectedCompany)
-                    ->select('borrowers.*');
+                    ->groupBy('borrowers.name')
+                    ->selectRaw("GROUP_CONCAT(DISTINCT(remittance_dates.remittance_date) SEPARATOR ', ') as remittance_dates, borrowers.name as name");
 
             return DataTables::of($query)->make(); 
         }
-        
+
+        // For the company list
+        elseif($request->remittanceDate != "master")
+        {
+            $query = DB::table('loans')
+                    ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
+                    ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
+                    ->leftJoin('remittance_dates', 'loans.remittance_date_id', '=', 'remittance_dates.id')
+                    ->where([
+                        ['companies.name', '=', $request->selectedCompany],
+                        ['remittance_dates.id', '=', $request->remittanceDate]
+                    ])
+                    ->selectRaw("DISTINCT(remittance_dates.remittance_date) as remittance_dates, borrowers.name as name");
+
+            return DataTables::of($query)->make(); 
+            // return Response::json($request->remittanceDate);
+        }
+        else
+        {
+            return Response::json('Failed');
+        }
+
     }
 
     // Displays the borrowers page

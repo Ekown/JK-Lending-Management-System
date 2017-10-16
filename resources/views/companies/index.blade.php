@@ -104,7 +104,7 @@
 
             $('.datatable').on('click', 'tbody tr', function() {
 
-              window.location = "/companies/" + $(this).data("company-name");
+              window.location = "/companies/" + $(this).data("company-name") + "/master";
             });
 		});
 	</script>

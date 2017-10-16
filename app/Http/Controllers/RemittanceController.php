@@ -30,4 +30,11 @@ class RemittanceController extends Controller
     	return Response::json($query);	
     }
 
+    public function getDates()
+    {
+        return $query = DB::table('remittance_dates')
+                ->select('remittance_dates.*')
+                ->get();
+    }
+
 }

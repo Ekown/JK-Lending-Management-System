@@ -112,10 +112,9 @@
         else if($('#loan_status').html() == "Paid")
         {
           $('#loan_status').attr("class", "badge badge-success");
+          $('.remitLoan').attr("hidden", "hidden");
         }
-      } 
-
-      updateBadge();
+      }
 
 			// Instantiate the server side DataTable
             $('.datatable').DataTable({
@@ -132,7 +131,8 @@
                         text: 'Remit to Loan',
                         action: function (e, dt, node, config) {
                             $('#remitModal').modal('show')
-                        }
+                        },
+                        className: 'remitLoan'
                     }
                 ],
                 "columns": [
@@ -196,6 +196,8 @@
                 //   $(tfoot).find('th').eq(1).html({{ $totalRemittances->first()->sum }});
                 // } 
             });
+
+            updateBadge();
 
             $('.datepicker').datepicker();
 

@@ -45,7 +45,8 @@
                 serverSide: true,
                 ajax: {
                     method : "POST",
-                    url : "{{ route('masterList') }}"             
+                    url : "{{ route('masterList') }}",
+                    async: false             
                 },
                 dom: 'Bfrtip',
                 buttons: [
@@ -89,7 +90,7 @@
                     
                     return nRow;
                 },
-                "pageLength" : 8  
+                "pageLength" : 7  
             });
 
             // Instantiate the DatePicker Plugin 
@@ -129,6 +130,8 @@
             var $select = $('#addBorrowerName2').selectize();
             var selectize = $select[0].selectize;
             var defaultBorrowers = [];
+
+            $('#addRemittanceDate1, #addRemittanceDate2').selectize();
 
 
             // Instantiate the Selectize Plugin

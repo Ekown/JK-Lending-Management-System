@@ -42,8 +42,9 @@ class LoanController extends Controller
     				->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
                     ->leftJoin('cash_advance_status', 'loans.cash_advance_status_id', '=', 'cash_advance_status.id')
                     ->leftJoin('term_type', 'loans.term_type_id', '=', 'term_type.id')
-    				->leftJoin('loan_status', 'loans.loan_status_id', '=', 'loan_status.id')
-    				->select('loans.*', 'borrowers.name as borrower_name', 'companies.name as company_name', 'cash_advance_status.name as cash_advance_status', 'term_type.name as term_type', 'loan_status.name as loan_status')
+                    ->leftJoin('loan_status', 'loans.loan_status_id', '=', 'loan_status.id')
+    				->leftJoin('remittance_dates', 'loans.remittance_date_id', '=', 'remittance_dates.id')
+    				->select('loans.*', 'borrowers.name as borrower_name', 'companies.name as company_name', 'cash_advance_status.name as cash_advance_status', 'term_type.name as term_type', 'loan_status.name as loan_status', 'remittance_dates.remittance_date as remittance_date')
     				->where('loans.id', $loan_id)
                     ->get();
 

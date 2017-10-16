@@ -58,7 +58,8 @@
                 serverSide: true,
                 ajax: {
                     method : "POST",
-                    url : "{{ route('master_c_list') }}"             
+                    url : "{{ route('master_c_list') }}",
+                    async: false             
                 },
                 dom: 'Bfrtip',
                 buttons: [
@@ -103,7 +104,7 @@
 
             $('.datatable').on('click', 'tbody tr', function() {
 
-              window.location = "/companies/" + $(this).data("company-name");
+              window.location = "/companies/" + $(this).data("company-name") + "/master";
             });
 		});
 	</script>

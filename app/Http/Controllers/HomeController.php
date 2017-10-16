@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\RemittanceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -27,6 +28,8 @@ class HomeController extends Controller
     {
         $companies = (new CompanyController)->getCompanies();
 
-        return view('home', compact('companies'));
+        $remittanceDates = (new RemittanceController)->getDates();
+
+        return view('home')->with('companies', $companies)->with('remittanceDates', $remittanceDates);
     }
 }

@@ -40,7 +40,7 @@
     <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
           <ul class="nav nav-pills flex-column">
             <li class="nav-item">
-              <a class="nav-link {{ set_active('home') }}" href="{{ route('home') }}">Master List </a>
+              <a class="nav-link {{ set_active('home') }}" href="{{ route('home') }}">Loans </a>
             </li>
             <li class="nav-item">
               <a class="nav-link {{ set_active('cash_advances') }}" href="{{ route('cashAdvances') }}">Cash Advances</a>

@@ -45,7 +45,7 @@ Route::get('borrowers', 'BorrowerController@show')->name('borrowers');
 Route::get('companies', 'CompanyController@show')->name('companies');
 
 // GET request for the wild card company page
-Route::get('companies/{company}', 'CompanyController@show');
+Route::get('companies/{company}/{date}', 'CompanyController@show');
 
 // GET request for the wild card borrower page
 Route::get('loan/{loan}', 'LoanController@show');

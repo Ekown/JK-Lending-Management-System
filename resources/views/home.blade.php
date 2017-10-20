@@ -170,13 +170,15 @@
 
             // Makes the datatable row clickable
             $('.datatable').on('click', 'tbody tr', function() {
-              window.location = "/loan/" + $(this).data("loan-id");
+              window.location = "loan/" + $(this).data("loan-id");
             }); 
 
             // Reload(Reset) the page when the "cancel" button is pressed in the modal
             $('#resetAddLoanForm').on('click', function() {
               location.reload(true);
             });
+
+            $('#')
 
             // Listens for updates from the server and redraws the datatable
             Echo.private(`loanMasterListChannel`)

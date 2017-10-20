@@ -24,8 +24,8 @@ class DatatableController extends Controller
         return DataTables::of($query)->make();
     }
 
-    // Returns an instance of the Master List DataTable
-    public function showMasterList()
+    // Returns an instance of the Current Loan Master List DataTable
+    public function showLoanMasterList($status = 1)
     {
     	// Gets all the latest ledgers with their associated column data from other tables
     	$query = DB::table('loans')
@@ -34,6 +34,7 @@ class DatatableController extends Controller
                     ->leftJoin('cash_advance_status', 'loans.cash_advance_status_id', '=', 'cash_advance_status.id')
                     ->leftJoin('term_type', 'loans.term_type_id', '=', 'term_type.id')
     				->leftJoin('loan_status', 'loans.loan_status_id', '=', 'loan_status.id')
+                    ->where('loans.loan_status_id', '=', $status)
     				->select('loans.*', 'borrowers.name as borrower_name', 'companies.name as company_name', 'cash_advance_status.name as cash_advance_status', 'term_type.name as term_type', 'loan_status.name as loan_status');
 
     	// Returns an instance of the DataTable class with the ledger data

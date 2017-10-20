@@ -122,7 +122,7 @@
                 serverSide: true,
                 ajax: {
                     method : "POST",
-                    url : "/loan/" + {{ $details->first()->id }} + "/remittances",
+                    url : {{ $details->first()->id }} + "/remittances",
                     async: false            
                 },
                 dom: 'Bfrtip',
@@ -145,7 +145,7 @@
                     {
                       var amount = aData.amount;
                       $(nRow).find("td:nth-child(3)").html("{{ peso() }}" + (+amount).toFixed(2));
-                      console.log(nRow);
+                      // console.log(nRow);
                       return nRow;
                     }
                       
@@ -163,10 +163,10 @@
                           'async': false,
                           'type': "POST",
                           'global': false,
-                          'url': "/loan/" + {{ $details->first()->id }} + "/remittances/sum",
+                          'url': {{ $details->first()->id }} + "/remittances/sum",
                           'success': function (data) {
                               tmp = data[0].sum;
-                              console.log(data[0].sum);
+                              // console.log(data[0].sum);
                           }
                       });
                       return tmp;

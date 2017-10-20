@@ -57,7 +57,7 @@ Route::get('loan/{loan}', 'LoanController@show');
 */
 
 // AJAX request for the Ledgers DataTable
-Route::post('master/list', 'DatatableController@showMasterList')->name('masterList');
+Route::post('master/list', 'DatatableController@showLoanMasterList')->name('masterList');
 
 // AJAX request for the Master Cash Advance List DataTable
 Route::post('master/ca_list', 'DatatableController@showMasterCashAdvanceList')->name('master_ca_list');

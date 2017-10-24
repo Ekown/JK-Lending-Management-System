@@ -1,23 +1,22 @@
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-      <a class="navbar-brand" href="{{ route('home') }}">JK Lending Management System</a>
+      <a class="navbar-brand" href="{{ route('home') }}"><font color="yellow">JK Lending Management System</font></a>
       <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-{{--           <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        @if((set_active('loans/list/active') || set_active('loans/list/current') || set_active('loans/list/finished') == "active"))
+          <li class="nav-item {{ set_active('loans/list/active') }}">
+            <a class="nav-link" href="{{ route('home') }}">Active Remittable Loans</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Settings</a>
+          <li class="nav-item {{ set_active('loans/list/current') }}">
+            <a class="nav-link" href="{{ route('currentLoansList') }}">Current Loans</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Profile</a>
+          <li class="nav-item {{ set_active('loans/list/finished') }}">
+            <a class="nav-link" href="{{ route('finishedLoansList') }}">Finished Loans</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Help</a>
-          </li> --}}
+        @endif
         </ul>
         <form class="form-inline mt-2 mt-md-0" method="POST" action="{{ route('logout') }}">
           {{ csrf_field() }}
@@ -40,7 +39,7 @@
     <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
           <ul class="nav nav-pills flex-column">
             <li class="nav-item">
-              <a class="nav-link {{ set_active('home') }}" href="{{ route('home') }}">Loans </a>
+              <a class="nav-link {{ (set_active('loans/list/active') || set_active('loans/list/current') || set_active('loans/list/finished') == "active")? "active" : "" }}" href="{{ route('home') }}">Loans </a>
             </li>
             <li class="nav-item">
               <a class="nav-link {{ set_active('cash_advances') }}" href="{{ route('cashAdvances') }}">Cash Advances</a>

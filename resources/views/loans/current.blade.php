@@ -3,11 +3,11 @@
 
 @section ('content')
 
-{{--     @include ('addLoanModal') --}}
+@include ('addLoanModal')
 
     <div class="container-fluid">
 
-      <h2>Active Remittable Loans Master List</h2>
+      <h2>Current Loans Master List</h2>
         <table class="datatable table mdl-data-table__cell--non-numeric table-hover" cellspacing="0"
             width="100%" role="grid" style="width: 100% !important; font-size: 12px;">
             <thead class="thead-inverse">
@@ -46,18 +46,17 @@
                 ajax: {
                     method : "POST",
                     url : "{{ route('masterList') }}",
-                    // data: { remittance_date :  } 
                     async: false             
                 },
-                // dom: 'Bfrtip',
-                // buttons: [
-                //     {
-                //         text: 'Add Loan Record',
-                //         action: function (e, dt, node, config) {
-                //             $('#addLoanModal').modal('show')
-                //         }
-                //     }
-                // ],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        text: 'Add Loan Record',
+                        action: function (e, dt, node, config) {
+                            $('#addLoanModal').modal('show')
+                        }
+                    }
+                ],
                 "columns": [
                     { "data": "id", "name" : "loans.id" },
                     { "data": "borrower_name", "name" : "borrowers.name" },
@@ -91,8 +90,7 @@
                     
                     return nRow;
                 },
-                "pageLength" : 7,
-                "bLengthChange": false  
+                "pageLength" : 7  
             });
 
             // Instantiate the DatePicker Plugin 
@@ -172,7 +170,7 @@
 
             // Makes the datatable row clickable
             $('.datatable').on('click', 'tbody tr', function() {
-              window.location = "loan/record/" + $(this).data("loan-id");
+              window.location = "/loan/record/" + $(this).data("loan-id");
             }); 
 
             // Reload(Reset) the page when the "cancel" button is pressed in the modal

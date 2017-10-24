@@ -32,8 +32,14 @@ Auth::routes();
 |--------------------------------------------------------------------------
 */
 
-// GET request for the home landing page
-Route::get('home', 'HomeController@index')->name('home');
+// GET request for the home landing page for active remittable loans
+Route::get('loans/list/active', 'HomeController@index')->name('home');
+
+// GET request for the home landing page for current loans list
+Route::get('loans/list/current', 'HomeController@currentLoansList')->name('currentLoansList');
+
+// GET request for the home landing page for current loans list
+Route::get('loans/list/finished', 'HomeController@finishedLoansList')->name('finishedLoansList');
 
 // GET request for the cash advances page
 Route::get('cash_advances', 'CashAdvanceController@show')->name('cashAdvances');
@@ -48,7 +54,7 @@ Route::get('companies', 'CompanyController@show')->name('companies');
 Route::get('companies/{company}/{date}', 'CompanyController@show');
 
 // GET request for the wild card borrower page
-Route::get('loan/{loan}', 'LoanController@show');
+Route::get('loan/record/{loan}', 'LoanController@show');
 
 /*
 |--------------------------------------------------------------------------
@@ -57,7 +63,11 @@ Route::get('loan/{loan}', 'LoanController@show');
 */
 
 // AJAX request for the Ledgers DataTable
-Route::post('master/list', 'DatatableController@showLoanMasterList')->name('masterList');
+Route::post('master/list/current', 'DatatableController@showLoanMasterList')->name('masterList');
+
+Route::post('master/list/active', 'DatatableController@showActiveLoanMasterList')->name('masterActiveList');
+
+Route::post('master/list/finished', 'DatatableController@showFinishedLoanMasterList')->name('masterFinishedLoanList');
 
 // AJAX request for the Master Cash Advance List DataTable
 Route::post('master/ca_list', 'DatatableController@showMasterCashAdvanceList')->name('master_ca_list');
@@ -85,10 +95,10 @@ Route::post('get/borrowers_by_company', 'BorrowerController@getBorrowersByCompan
 		->name('getBorrowersByCompany');
 
 // AJAX request for getting loan remittances by loan
-Route::post('loan/{loan}/remittances', 'DatatableController@showLoanRemittances');
+Route::post('loan/record/{loan}/remittances', 'DatatableController@showLoanRemittances');
 
 // AJAX request for getting loan remittances by loan
-Route::post('loan/{loan}/remittances/sum', 'LoanController@readTotalRemittance');
+Route::post('loan/record/{loan}/remittances/sum', 'LoanController@readTotalRemittance');
 
 
 // TEst for Pusher

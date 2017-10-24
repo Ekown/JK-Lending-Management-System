@@ -32,4 +32,19 @@ class HomeController extends Controller
 
         return view('home')->with('companies', $companies)->with('remittanceDates', $remittanceDates);
     }
+
+
+    public function currentLoansList()
+    {
+        $companies = (new CompanyController)->getCompanies();
+
+        $remittanceDates = (new RemittanceController)->getDates();
+
+        return view('loans/current')->with('companies', $companies)->with('remittanceDates', $remittanceDates);
+    }
+
+    public function finishedLoansList()
+    {
+        return view('loans/finished');
+    }
 }

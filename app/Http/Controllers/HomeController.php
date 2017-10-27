@@ -26,11 +26,10 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $companies = (new CompanyController)->getCompanies();
+        // Get the current remittance date
+        $date = (new RemittanceController)->getCorrespondingDate(remittance_date_id());
 
-        $remittanceDates = (new RemittanceController)->getDates();
-
-        return view('home')->with('companies', $companies)->with('remittanceDates', $remittanceDates);
+        return view('home')->with('date', $date);
     }
 
 

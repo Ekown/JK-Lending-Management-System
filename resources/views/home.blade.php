@@ -7,7 +7,15 @@
 
     <div class="container-fluid">
 
-      <h2>Active Remittable Loans Master List</h2>
+      <h2>Active Resdfgmittable Loans Master List</h2>
+      Current Remittance Date: 
+      @if($date != null)
+        @foreach($date as $remittance_date)
+            <span class="badge badge-primary">{{ $remittance_date->remittance_date }}</span>
+        @endforeach
+      @else
+        <span class="badge badge-danger">No Remittance Today</span>
+      @endif
         <table class="datatable table mdl-data-table__cell--non-numeric table-hover" cellspacing="0"
             width="100%" role="grid" style="width: 100% !important; font-size: 12px;">
             <thead class="thead-inverse">
@@ -45,7 +53,7 @@
                 serverSide: true,
                 ajax: {
                     method : "POST",
-                    url : "{{ route('masterList') }}",
+                    url : "{{ route('masterActiveList') }}",
                     // data: { remittance_date :  } 
                     async: false             
                 },
@@ -68,9 +76,9 @@
                     { "data": "percentage", "name" : "loans.percentage" },
                     { "data": "deduction", "name" : "loans.deduction" }, 
                     { "data": "term_type", "name" : "term_type.name" },
-                    { "data": "term", "name" : "loans.term" },                 
-                    // { "data": "loan_status", "name" : "loan_status.name" },                  
-                    { "data": "cash_advance_status", "name" : "cash_advance_status.name" }
+                    { "data": "term", "name" : "loans.term" },                                   
+                    { "data": "cash_advance_status", "name" : "cash_advance_status.name" },
+                    // { "data": "loan_status", "name" : "loan_status.name" }
                 ],
                 "fnRowCallback" : function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                     if(aData != null)
@@ -87,6 +95,12 @@
                         $(nRow).find("td:nth-child(6)").html("{{ peso() }}" + (+interestedAmount).toFixed(2));
                         $(nRow).find("td:nth-child(7)").html(percentage + "%");
                         $(nRow).find("td:nth-child(8)").html("{{ peso() }}" + (+deductionAmount).toFixed(2));
+
+                        // console.log(aData.loan_status);
+
+                        // If the current row's loan status is late, turn the background color to red
+                        if(aData.loan_status == "Late")
+                            $(nRow).attr("style", "background-color: #f74949");
                     }
                     
                     return nRow;
@@ -95,96 +109,14 @@
                 "bLengthChange": false  
             });
 
-            // Instantiate the DatePicker Plugin 
-            $('.datepicker').datepicker();
-
-            // Submit a POST AJAX request to add the loan record
-            $('#submitAddLoanForm').click(function() {
-
-                // Hide the modal after submitting
-                $('#addLoanModal').modal('hide')
-
-                // Check which form is filled-up and submitted
-                if($('#new').hasClass('active'))
-                {
-                    var form = $('#addLoanRecordForm1');
-                }
-                else if($('#existing').hasClass('active'))
-                {
-                    var form = $('#addLoanRecordForm2');
-                }
-
-                // AJAX request for submiting the loan form
-                $.ajax({
-                    method: "POST",
-                    url: "{{ route('addLoan') }}",
-                    data: form.serialize(),
-                    success: function(){
-                        console.log("success");
-                        $('.datatable').DataTable().draw(false);
-                    },
-                    error: function(){
-                        console.log("error");
-                    }
-                });
-            });
-
-            var $select = $('#addBorrowerName2').selectize();
-            var selectize = $select[0].selectize;
-            var defaultBorrowers = [];
-
-            $('#addRemittanceDate1, #addRemittanceDate2').selectize();
-
-
-            // Instantiate the Selectize Plugin
-            $('#addBorrowerCompany1, #addBorrowerCompany2, #addLoanTermType1, #addLoanTermType2').selectize({
-              sortField: 'text'
-            });
-            
-            // Ajax call for borrowers by company
-            function ajaxCallForBorrowers(){
-               $.ajax({
-                  method: "POST",
-                  url: "{{ route('getBorrowersByCompany') }}",
-                  data: { selectedCompany : $('#addBorrowerCompany2').val() },
-                  dataType: 'json',
-                  success: function (data){
-                      defaultBorrowers = data;
-                      selectize.addOption({value: 0, text: "-Please choose a borrower-"});
-                      defaultBorrowers.forEach(function(entry)
-                      {
-                          selectize.addOption({value: entry.id, text: entry.name});
-                      });
-                      selectize.refreshOptions();
-                      selectize.addItem(0);
-                  }
-               }); 
-            }      
-
-            // Call the function
-            ajaxCallForBorrowers();     
-
-            // When the company dropdown is changed, the function is called again
-            $('#addBorrowerCompany2').change(function (){
-                selectize.clearOptions();
-                ajaxCallForBorrowers();
-            });     
-
             // Makes the datatable row clickable
             $('.datatable').on('click', 'tbody tr', function() {
-              window.location = "loan/record/" + $(this).data("loan-id");
+              window.location = "/loan/record/" + $(this).data("loan-id");
             }); 
-
-            // Reload(Reset) the page when the "cancel" button is pressed in the modal
-            $('#resetAddLoanForm').on('click', function() {
-              location.reload(true);
-            });
-
-            // $('#')
-
+        
             // Listens for updates from the server and redraws the datatable
             Echo.private(`loanMasterListChannel`)
-            .listen('Remittance', (e) => {
+            .listen('UpdateActiveLoans', (e) => {
                 // console.log(e);
                 $('.datatable').DataTable().draw(false);
             });    

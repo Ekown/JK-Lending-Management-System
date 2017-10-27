@@ -20,14 +20,17 @@ class LoanController extends Controller
         $totalRemittances = $this->readTotalRemittance($loan);
 
         $loanBalance = DB::table('loans')
-                        ->select('loans.interested_amount')
+                        ->select('loans.interested_amount', 'loans.loan_status_id')
                         ->where('loans.id', $loan)
                         ->get();  
 
         if($totalRemittances->first()->sum >= $loanBalance->first()->interested_amount)
             $this->updateLoanStatus(2, $loan);
         else
-            $this->updateLoanStatus(1, $loan);
+        {
+            if($loanBalance->first()->loan_status_id != "3")
+                $this->updateLoanStatus(1, $loan);
+        }
 
         $details = $this->getLoanDetails($loan);
 

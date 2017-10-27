@@ -22,3 +22,7 @@ Broadcast::channel('loanChannel.{loanId}', function () {
 Broadcast::channel('loanMasterListChannel', function () {
     return true;
 });
+
+Broadcast::channel('updateActiveLoans', function () {
+    return true;
+});

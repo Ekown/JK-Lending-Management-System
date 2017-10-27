@@ -101,7 +101,7 @@
 
       function updateBadge(){
         // Dynamically change the badge of the loan status
-        if($('#loan_status').html() == "Not Paid")
+        if($('#loan_status').html() == "Not Fully Paid")
         {
           $('#loan_status').attr("class", "badge badge-warning");
         }

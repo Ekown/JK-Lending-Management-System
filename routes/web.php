@@ -26,6 +26,10 @@ Route::get('/', function() {
 // AUTH routes for login, register, forgot password, and reset password
 Auth::routes();
 
+Route::get('/home', function(){
+	return redirect('/loans/list/active');
+});
+
 /*
 |--------------------------------------------------------------------------
 | GET Routes

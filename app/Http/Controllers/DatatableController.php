@@ -17,16 +17,13 @@ class DatatableController extends Controller
     public function showActiveLoanMasterList()
     {
         // Gets all the latest active ledgers with their associated column data from other tables
-        $query = DB::table('loans')
+        $query = DB::table('active_remittable_loans')
+                    ->leftJoin('loans', 'active_remittable_loans.loan_id', '=', 'loans.id')
                     ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
                     ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
                     ->leftJoin('cash_advance_status', 'loans.cash_advance_status_id', '=', 'cash_advance_status.id')
                     ->leftJoin('term_type', 'loans.term_type_id', '=', 'term_type.id')
                     ->leftJoin('loan_status', 'loans.loan_status_id', '=', 'loan_status.id')
-                    ->where([
-                        ['loans.loan_status_id', '=', $status],
-                        ['']
-                    ])
                     ->select('loans.*', 'borrowers.name as borrower_name', 'companies.name as company_name', 'cash_advance_status.name as cash_advance_status', 'term_type.name as term_type', 'loan_status.name as loan_status');
 
         // Returns an instance of the DataTable class with the ledger data
@@ -68,7 +65,7 @@ class DatatableController extends Controller
                     ->leftJoin('cash_advance_status', 'loans.cash_advance_status_id', '=', 'cash_advance_status.id')
                     ->leftJoin('term_type', 'loans.term_type_id', '=', 'term_type.id')
     				->leftJoin('loan_status', 'loans.loan_status_id', '=', 'loan_status.id')
-                    ->where('loans.loan_status_id', '=', 1)
+                    ->whereIn('loans.loan_status_id', [1,3])
     				->select('loans.*', 'borrowers.name as borrower_name', 'companies.name as company_name', 'cash_advance_status.name as cash_advance_status', 'term_type.name as term_type', 'loan_status.name as loan_status');
 
     	// Returns an instance of the DataTable class with the ledger data

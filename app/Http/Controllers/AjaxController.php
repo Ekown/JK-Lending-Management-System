@@ -18,7 +18,6 @@ class AjaxController extends Controller
     // Creates a new loan record and appends it into the database
     public function createLoan(Request $request)
     {
-
     	// If the loan is for a new borrower
     	if ($request->addBorrowerCompany1 != null)
     	{
@@ -34,7 +33,7 @@ class AjaxController extends Controller
             $interested_amount = $request->addLoanAmount1 + ($request->addLoanAmount1 * ($request->addBorrowerPercentage1/100));
 
         	// Create a new loan record
-        	$createLoanRecord = DB::table('loans')->insert([
+        	$createLoanRecord = DB::table('loans')->insertGetId([
         		[
         			'borrower_id' => $borrower_id->first()->id,
         			'amount' => $request->addLoanAmount1,
@@ -56,7 +55,7 @@ class AjaxController extends Controller
             // Calculate the interested amount
             $interested_amount = $request->addLoanAmount2 + ($request->addLoanAmount2 * ($request->addBorrowerPercentage2/100));
 
-    		$createLoanRecord = DB::table('loans')->insert([
+    		$createLoanRecord = DB::table('loans')->insertGetId([
         		[
         			'borrower_id' => $request->addBorrowerName2,
         			'amount' => $request->addLoanAmount2,
@@ -72,6 +71,19 @@ class AjaxController extends Controller
 
         	return Response::json($createLoanRecord);
     	}
+
+        // If the added loan record is of the current remittance id then insert it into the active     // table
+        if(remittance_date_id() == $createLoanRecord)
+        {
+            $insertIntoActive = DB::table('active_remittable_loans')
+                                  ->insert([
+                                        [
+                                            'loan_id' => $createLoanRecord,
+                                            'remittance_date_id' => remittance_date_id(),
+                                            'date' => Carbon::today('Asia/Manila')->format('Y-m-d')
+                                        ]
+                                      ]);
+        }
         
     }
 

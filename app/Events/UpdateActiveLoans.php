@@ -44,17 +44,27 @@ class UpdateActiveLoans implements ShouldBroadcast
                     ->leftJoin('loan_status', 'loans.loan_status_id', '=', 'loan_status.id')
                     ->whereIn('loans.loan_status_id', [1,3])
                     ->whereIn('loans.remittance_date_id', $arr_date)
-                    ->select('loans.*', 'borrowers.name as borrower_name', 'companies.name as company_name', 'cash_advance_status.name as cash_advance_status', 'term_type.name as term_type', 'loan_status.name as loan_status');
+                    ->select('loans.*', 'borrowers.name as borrower_name', 'companies.name as company_name', 'cash_advance_status.name as cash_advance_status', 'term_type.name as term_type', 'loan_status.name as loan_status')
+                    ->get();
 
             // Set the loan counter
             $inserted_loans_ctr = 0;
 
             // Insert each of the ids of all the returned loan records
-            foreach($query->get() as $loan)
+            foreach($query as $loan)
             {
                 // $arr_id[] = $loan->id;
 
-                $insert_to_active = DB::table('active_remittable_loans')
+                // Check if the current loan is already in the active table
+                $check_duplicate = DB::table('active_remittable_loans')
+                                   ->select('loans.*')
+                                   ->where('loan_id', $loan->id)
+                                   ->exists();
+
+                if(! $check_duplicate)
+                {
+                    // Insert the new loan into the active table
+                    $insert_to_active = DB::table('active_remittable_loans')
                                       ->insert([
                                         [
                                             'loan_id' => $loan->id,
@@ -62,6 +72,7 @@ class UpdateActiveLoans implements ShouldBroadcast
                                             'date' => Carbon::today('Asia/Manila')->format('Y-m-d')
                                         ]
                                       ]);
+                }
 
                 // Increment the counter for each inserted record
                 $inserted_loans_ctr++;

@@ -104,6 +104,8 @@ Route::post('loan/record/{loan}/remittances', 'DatatableController@showLoanRemit
 // AJAX request for getting loan remittances by loan
 Route::post('loan/record/{loan}/remittances/sum', 'LoanController@readTotalRemittance');
 
+// AJAX request for getting the current remittance date
+Route::post('loan/list/active/remittance_date', 'RemittanceController@getCorrespondingDate')->name('getCorrespondingDate');
 
 // TEst for Pusher
 

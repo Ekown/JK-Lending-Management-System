@@ -26,10 +26,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // Get the current remittance date
-        $date = (new RemittanceController)->getCorrespondingDate(remittance_date_id());
-
-        return view('home')->with('date', $date);
+        return view('loans.active');
     }
 
 

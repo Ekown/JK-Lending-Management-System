@@ -36,7 +36,7 @@
 <script>
 	$(document).ready(function(){
 
-		$('.datatable').DataTable({
+		var table = $('.datatable').DataTable({
 			"autoWidth": true,
             processing: true,
             serverSide: true,
@@ -90,6 +90,15 @@
                 "pageLength" : 7,
                 "bLengthChange": false
 		});
+
+        // Makes the datatable row clickable
+        $('.datatable').on('click', 'tbody tr', function() {
+            if(table.data().count())
+            {
+                // console.log(table.data().count());
+                window.location = "/loan/record/" + $(this).data("loan-id");
+            }
+        });
 	});
 </script>
 @endpush

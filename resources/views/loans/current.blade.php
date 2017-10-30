@@ -39,7 +39,7 @@
         $(document).ready(function() {
 
             // Instantiate the server side DataTable
-            $('.datatable').DataTable({
+            var table = $('.datatable').DataTable({
                 "autoWidth": true,
                 processing: true,
                 serverSide: true,
@@ -168,17 +168,19 @@
                 ajaxCallForBorrowers();
             });     
 
-            // Makes the datatable row clickable
-            $('.datatable').on('click', 'tbody tr', function() {
-              window.location = "/loan/record/" + $(this).data("loan-id");
-            }); 
-
             // Reload(Reset) the page when the "cancel" button is pressed in the modal
             $('#resetAddLoanForm').on('click', function() {
               location.reload(true);
             });
 
-            // $('#')
+            // Makes the datatable row clickable
+            $('.datatable').on('click', 'tbody tr', function() {
+                if(table.data().count())
+                {
+                    // console.log(table.data().count());
+                    window.location = "/loan/record/" + $(this).data("loan-id");
+                }
+            });
 
             // Listens for updates from the server and redraws the datatable
             Echo.private(`loanMasterListChannel`)

@@ -7,15 +7,8 @@
 
     <div class="container-fluid">
 
-      <h2>Active Resdfgmittable Loans Master List</h2>
-      Current Remittance Date: 
-      @if($date != null)
-        @foreach($date as $remittance_date)
-            <span class="badge badge-primary">{{ $remittance_date->remittance_date }}</span>
-        @endforeach
-      @else
-        <span class="badge badge-danger">No Remittance Today</span>
-      @endif
+      <h2>Active Remittable Loans Master List</h2>
+      Current Remittance Date: <span id="remittance_date"></span>
         <table class="datatable table mdl-data-table__cell--non-numeric table-hover" cellspacing="0"
             width="100%" role="grid" style="width: 100% !important; font-size: 12px;">
             <thead class="thead-inverse">
@@ -46,8 +39,40 @@
     <script>
         $(document).ready(function() {
 
+            // Dynamically create and update the date badge
+            function changeDateBadge()
+            {
+                $.ajax({
+                    method: "POST",
+                    url: "{{ route('getCorrespondingDate') }}",
+                    async: false,
+                    success: function(res) {
+                        // console.log(res);
+
+                        var html = "";
+
+                        if(res[0] != null)
+                        {
+                            for(var i = 0, len = res.length; i < len; i++) 
+                            {
+                               html += "&nbsp;<span class='badge badge-primary'>"+res[i].remittance_date+"</span>";
+                            }
+                        }
+                        else
+                        {
+                            html = "<span class='badge badge-danger'>No Remittance Today</span>";
+                        }    
+
+                         $('#remittance_date').html(html);
+                        
+                    }
+                });
+            }
+
+            changeDateBadge();
+
             // Instantiate the server side DataTable
-            $('.datatable').DataTable({
+            var table = $('.datatable').DataTable({
                 "autoWidth": true,
                 processing: true,
                 serverSide: true,
@@ -109,15 +134,22 @@
                 "bLengthChange": false  
             });
 
+            
+            
             // Makes the datatable row clickable
             $('.datatable').on('click', 'tbody tr', function() {
-              window.location = "/loan/record/" + $(this).data("loan-id");
+                if(table.data().count())
+                {
+                    // console.log(table.data().count());
+                    window.location = "/loan/record/" + $(this).data("loan-id");
+                }
             }); 
         
             // Listens for updates from the server and redraws the datatable
             Echo.private(`loanMasterListChannel`)
             .listen('UpdateActiveLoans', (e) => {
                 // console.log(e);
+                changeDateBadge();
                 $('.datatable').DataTable().draw(false);
             });    
 

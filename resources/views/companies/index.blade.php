@@ -53,7 +53,7 @@
 		$(document).ready(function (){
 
 			// Instantiate the server side DataTable
-            $('.datatable').DataTable({
+            var table = $('.datatable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -103,8 +103,10 @@
             });
 
             $('.datatable').on('click', 'tbody tr', function() {
-
-              window.location = "/companies/" + $(this).data("company-name") + "/master";
+                if(table.data().count())
+                {
+                    window.location = "/companies/" + $(this).data("company-name") + "/master";
+                }
             });
 		});
 	</script>

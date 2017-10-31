@@ -21,63 +21,70 @@ class UpdateActiveLoans implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct()
-    {
-        
-        // Ready the active remittance table for insertion
-        ready_active_table();        
+    public $clean;
 
-        // Get the corresponding remittance date id of current date
-        $arr_date = remittance_date_id();
+    public function __construct($clean = true)
+    {   
+        $this->clean = $clean;
 
-        // If the current date has a corresponding remittance date, get all the loans with the 
-        // correspoding remittance date and insert each of their loan id into the active remittance
-        // table
-        if($arr_date != null)
+        if($clean)
         {
-            // Get all the loans with the corresponding remittance date
-            $query = DB::table('loans')
-                    ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
-                    ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
-                    ->leftJoin('cash_advance_status', 'loans.cash_advance_status_id', '=', 'cash_advance_status.id')
-                    ->leftJoin('term_type', 'loans.term_type_id', '=', 'term_type.id')
-                    ->leftJoin('loan_status', 'loans.loan_status_id', '=', 'loan_status.id')
-                    ->whereIn('loans.loan_status_id', [1,3])
-                    ->whereIn('loans.remittance_date_id', $arr_date)
-                    ->select('loans.*', 'borrowers.name as borrower_name', 'companies.name as company_name', 'cash_advance_status.name as cash_advance_status', 'term_type.name as term_type', 'loan_status.name as loan_status')
-                    ->get();
+            // Ready the active remittance table for insertion
+            ready_active_table();        
 
-            // Set the loan counter
-            $inserted_loans_ctr = 0;
+            // Get the corresponding remittance date id of current date
+            $arr_date = remittance_date_id();
 
-            // Insert each of the ids of all the returned loan records
-            foreach($query as $loan)
+            // If the current date has a corresponding remittance date, get all the loans with the 
+            // correspoding remittance date and insert each of their loan id into the active remittance
+            // table
+            if($arr_date != null)
             {
-                // $arr_id[] = $loan->id;
+                // Get all the loans with the corresponding remittance date
+                $query = DB::table('loans')
+                        ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
+                        ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
+                        ->leftJoin('cash_advance_status', 'loans.cash_advance_status_id', '=', 'cash_advance_status.id')
+                        ->leftJoin('term_type', 'loans.term_type_id', '=', 'term_type.id')
+                        ->leftJoin('loan_status', 'loans.loan_status_id', '=', 'loan_status.id')
+                        ->whereIn('loans.loan_status_id', [1,3])
+                        ->whereIn('loans.remittance_date_id', $arr_date)
+                        ->select('loans.*', 'borrowers.name as borrower_name', 'companies.name as company_name', 'cash_advance_status.name as cash_advance_status', 'term_type.name as term_type', 'loan_status.name as loan_status')
+                        ->get();
 
-                // Check if the current loan is already in the active table
-                $check_duplicate = DB::table('active_remittable_loans')
-                                   ->select('loans.*')
-                                   ->where('loan_id', $loan->id)
-                                   ->exists();
+                // Set the loan counter
+                $inserted_loans_ctr = 0;
 
-                if(! $check_duplicate)
+                // Insert each of the ids of all the returned loan records
+                foreach($query as $loan)
                 {
-                    // Insert the new loan into the active table
-                    $insert_to_active = DB::table('active_remittable_loans')
-                                      ->insert([
-                                        [
-                                            'loan_id' => $loan->id,
-                                            'remittance_date_id' => $loan->remittance_date_id,
-                                            'date' => Carbon::today('Asia/Manila')->format('Y-m-d')
-                                        ]
-                                      ]);
-                }
+                    // $arr_id[] = $loan->id;
 
-                // Increment the counter for each inserted record
-                $inserted_loans_ctr++;
+                    // Check if the current loan is already in the active table
+                    $check_duplicate = DB::table('active_remittable_loans')
+                                       ->select('loans.*')
+                                       ->where('loan_id', $loan->id)
+                                       ->exists();
+
+                    if(! $check_duplicate)
+                    {
+                        // Insert the new loan into the active table
+                        $insert_to_active = DB::table('active_remittable_loans')
+                                          ->insert([
+                                            [
+                                                'loan_id' => $loan->id,
+                                                'remittance_date_id' => $loan->remittance_date_id,
+                                                'date' => Carbon::today('Asia/Manila')->format('Y-m-d')
+                                            ]
+                                          ]);
+                    }
+
+                    // Increment the counter for each inserted record
+                    $inserted_loans_ctr++;
+                }
             }
         }
+        
     }
 
     /**

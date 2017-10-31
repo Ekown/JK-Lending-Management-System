@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UpdateActiveLoans;
 use App\Http\Controllers\BorrowerController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
@@ -33,7 +35,7 @@ class AjaxController extends Controller
             $interested_amount = $request->addLoanAmount1 + ($request->addLoanAmount1 * ($request->addBorrowerPercentage1/100));
 
         	// Create a new loan record
-        	$createLoanRecord = DB::table('loans')->insertGetId([
+        	$createLoanRecord = DB::table('loans')->insertGetId(
         		[
         			'borrower_id' => $borrower_id->first()->id,
         			'amount' => $request->addLoanAmount1,
@@ -45,9 +47,7 @@ class AjaxController extends Controller
                     'interested_amount' => $interested_amount,
         			'created_at' => $request->addBorrowerDate1
         		]
-        	]);
-
-        	return Response::json($createLoanRecord);
+        	);
     	}
     	// If the loan is for an existing borrower
     	else
@@ -55,7 +55,7 @@ class AjaxController extends Controller
             // Calculate the interested amount
             $interested_amount = $request->addLoanAmount2 + ($request->addLoanAmount2 * ($request->addBorrowerPercentage2/100));
 
-    		$createLoanRecord = DB::table('loans')->insertGetId([
+    		$createLoanRecord = DB::table('loans')->insertGetId(
         		[
         			'borrower_id' => $request->addBorrowerName2,
         			'amount' => $request->addLoanAmount2,
@@ -67,23 +67,30 @@ class AjaxController extends Controller
                     'interested_amount' => $interested_amount,
         			'created_at' => $request->addBorrowerDate2
         		]
-        	]);
-
-        	return Response::json($createLoanRecord);
+        	);
     	}
 
         // If the added loan record is of the current remittance id then insert it into the active     // table
-        if(remittance_date_id() == $createLoanRecord)
+        for($i = 0; $i < count(remittance_date_id()); $i++)
         {
-            $insertIntoActive = DB::table('active_remittable_loans')
-                                  ->insert([
-                                        [
-                                            'loan_id' => $createLoanRecord,
-                                            'remittance_date_id' => remittance_date_id(),
-                                            'date' => Carbon::today('Asia/Manila')->format('Y-m-d')
-                                        ]
-                                      ]);
-        }
+            if(remittance_date_id()[$i] == (isset($request->addRemittanceDate1)?$request->addRemittanceDate1:$request->addRemittanceDate2))
+            {
+                $insertIntoActive = DB::table('active_remittable_loans')
+                                      ->insert([
+                                            [
+                                                'loan_id' => $createLoanRecord,
+                                                'remittance_date_id' => remittance_date_id()[$i],
+                                                'date' => Carbon::today('Asia/Manila')->format('Y-m-d')
+                                            ]
+                                          ]);
+
+                event(new UpdateActiveLoans(false));
+
+                return Response::json($insertIntoActive);
+            }
+        }      
+
+        return Response::json($createLoanRecord);  
         
     }
 

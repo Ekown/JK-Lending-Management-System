@@ -133,7 +133,6 @@
 
             $('#addRemittanceDate1, #addRemittanceDate2').selectize();
 
-
             // Instantiate the Selectize Plugin
             $('#addBorrowerCompany1, #addBorrowerCompany2, #addLoanTermType1, #addLoanTermType2').selectize({
               sortField: 'text'

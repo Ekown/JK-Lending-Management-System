@@ -46,7 +46,7 @@ class Remittance implements ShouldBroadcast
         }
         else
         {
-            $this->updateLoanStatus = "Not Paid";
+            $this->updateLoanStatus = "Not Fully Paid";
             (new LoanController)->updateLoanStatus(1, $loanId);
         }
     }
@@ -60,10 +60,18 @@ class Remittance implements ShouldBroadcast
     {
 
         // Broadcast to the Loan and Loan Master List Channels
-        return [
-            new PrivateChannel('loanChannel.'.$this->loanId),
-            new PrivateChannel('loanMasterListChannel')
-        ];
+        if($this->updateLoanStatus == "Paid")
+        {
+            return [
+                new PrivateChannel('loanChannel.'.$this->loanId),
+                new PrivateChannel('loanMasterListChannel')
+            ];
+        }
+        else
+        {
+            return new PrivateChannel('loanChannel.'.$this->loanId);
+        }
+        
 
     }
 }

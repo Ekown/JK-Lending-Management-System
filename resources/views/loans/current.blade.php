@@ -103,7 +103,7 @@
                     // var lastRemittanceDateId = function() {
                     //     var tmp = null;
                     //     $.ajax({
-                    //         url: "{{ route('getLastRemittanceDateId') }}",
+                    {{-- //         url: "{{ route('getLastRemittanceDateId') }}", --}}
                     //         method: 'POST',
                     //         global: false,
                     //         async: false,

@@ -20,6 +20,32 @@ class AjaxController extends Controller
     // Creates a new loan record and appends it into the database
     public function createLoan(Request $request)
     {
+        $exists = false;
+
+        // Check if the given remittance date exists in the database
+        $existingRemittanceDate = DB::table('remittance_dates')
+                                  ->select('id')
+                                  ->get();
+
+        for($i = 0; $i < count($existingRemittanceDate); $i++) 
+        {
+            if((string)$existingRemittanceDate[$i]->id == (isset($request->addRemittanceDate1)?(string)$request->addRemittanceDate1:(string)$request->addRemittanceDate2))
+            {
+                $exists = true;
+            }
+        }
+
+        // If it doesn't exist, it is considered to be a customized date and will be inserted into    // the database
+        if($exists == false)
+        {
+            $addNewRemittanceDate = DB::table('remittance_dates')
+                                    ->insertGetId(
+                                        [
+                                            'remittance_date' => (isset($request->addRemittanceDate1)?$request->addRemittanceDate1:$request->addRemittanceDate2)
+                                        ]
+                                    );
+        }
+
     	// If the loan is for a new borrower
     	if ($request->addBorrowerCompany1 != null)
     	{
@@ -41,7 +67,8 @@ class AjaxController extends Controller
         			'amount' => $request->addLoanAmount1,
         			'term' => $request->addBorrowerTerm1,
                     'term_type_id' => $request->addLoanTermType1,
-                    'remittance_date_id' => $request->addRemittanceDate1,
+                    'remittance_date_id' => ($exists == true?$request->addRemittanceDate1:
+                        $addNewRemittanceDate),
         			'percentage' => $request->addBorrowerPercentage1,
                     'deduction' => $interested_amount/($request->addBorrowerTerm1 * 2),
                     'interested_amount' => $interested_amount,
@@ -61,7 +88,7 @@ class AjaxController extends Controller
         			'amount' => $request->addLoanAmount2,
         			'term' => $request->addBorrowerTerm2,
                     'term_type_id' => $request->addLoanTermType2,
-                    'remittance_date_id' => $request->addRemittanceDate2,
+                    'remittance_date_id' => ($exists == true?$request->addRemittanceDate2:$addNewRemittanceDate),
         			'percentage' => $request->addBorrowerPercentage2,
                     'deduction' => $interested_amount/($request->addBorrowerTerm2 * 2),
                     'interested_amount' => $interested_amount,
@@ -70,7 +97,8 @@ class AjaxController extends Controller
         	);
     	}
 
-        // If the added loan record is of the current remittance id then insert it into the active     // table
+        // If the added loan record is of the current remittance id then insert it into the active 
+        // table
         for($i = 0; $i < count(remittance_date_id()); $i++)
         {
             if(remittance_date_id()[$i] == (isset($request->addRemittanceDate1)?$request->addRemittanceDate1:$request->addRemittanceDate2))

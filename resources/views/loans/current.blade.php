@@ -96,6 +96,35 @@
             // Instantiate the DatePicker Plugin 
             $('.datepicker').datepicker();
 
+            // Instantiate the Remittance Date Dropdown
+            $('#addRemittanceDate1, #addRemittanceDate2').selectize({
+                // Enable the user to add new remittance dates into the dropdown
+                create: function(input, callback){
+                    // var lastRemittanceDateId = function() {
+                    //     var tmp = null;
+                    //     $.ajax({
+                    //         url: "{{ route('getLastRemittanceDateId') }}",
+                    //         method: 'POST',
+                    //         global: false,
+                    //         async: false,
+                    //         success: function(data){
+                    //             tmp = data.id;
+                    //             //console.log(tmp);
+                    //         },
+                    //         error: function() {
+                    //             console.log("error");
+                    //         }
+                    //     });
+                    //     return tmp;
+                    // }();
+                    // console.log(lastRemittanceDateId+1);
+                    callback({
+                        'value': input,     
+                        'text': input   
+                    });
+                }
+            });
+
             // Submit a POST AJAX request to add the loan record
             $('#submitAddLoanForm').click(function() {
 
@@ -131,7 +160,7 @@
             var selectize = $select[0].selectize;
             var defaultBorrowers = [];
 
-            $('#addRemittanceDate1, #addRemittanceDate2').selectize();
+            
 
             // Instantiate the Selectize Plugin
             $('#addBorrowerCompany1, #addBorrowerCompany2, #addLoanTermType1, #addLoanTermType2').selectize({

@@ -30,19 +30,19 @@ class RemittanceController extends Controller
     	return Response::json($query);	
     }
 
-    public function getDates()
-    {
-        return $query = DB::table('remittance_dates')
-                ->select('remittance_dates.*')
-                ->get();
-    }
-
     public function getCorrespondingDate()
     {
         return Response::json(DB::table('remittance_dates')
                           ->select('remittance_dates.remittance_date')
                           ->whereIn('remittance_dates.id', remittance_date_id())
                           ->get());
+    }
+
+    public function getDates()
+    {
+        return $query = DB::table('remittance_dates')
+                ->select('remittance_dates.*')
+                ->get();
     }
 
 }

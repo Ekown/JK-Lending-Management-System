@@ -38,7 +38,7 @@
         @if (Auth::check())
             @include ('layouts.navbar')
 
-            <main class="col-sm-9 ml-sm-auto ml-xl-auto col-md-10 pt-2" role="main">
+            <main class="col-xs-9 col-sm-9 col-md-10 col-lg-10 col-xl-10 ml-sm-auto ml-xl-auto pt-2" role="main">
         @endif
         
         @yield ('content')

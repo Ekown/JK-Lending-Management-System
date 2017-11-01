@@ -36,7 +36,7 @@
 
   <div class="container-fluid">
       <div class="row">
-    <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
+    <nav class="col-xs-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 d-none d-sm-block bg-light sidebar">
           <ul class="nav nav-pills flex-column">
             <li class="nav-item">
               <a class="nav-link {{ (set_active('loans/list/active') || set_active('loans/list/current') || set_active('loans/list/finished') == "active")? "active" : "" }}" href="{{ route('home') }}">Loans </a>

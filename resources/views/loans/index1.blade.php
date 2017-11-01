@@ -41,7 +41,7 @@
 	<h2>Loan Details</h2>
 
 	<div class="row loan-details">
-		<ul class="list-group col-md-2 col-lg-4 col-xl-4">
+		<ul class="list-group col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
 		  <li class="list-group-item border-0"><b>Loan ID:</b> {{ $details->first()->id }}</li>
 		  <li class="list-group-item border-0"><b>Date of Loan:</b> {{ $details->first()->created_at }}</li>
 		  <li class="list-group-item border-0"><b>Borrower Name:</b> {{ $details->first()->borrower_name }}</li>
@@ -67,7 +67,7 @@
 		  <li class="list-group-item border-0"><b>Interested Amount:</b> {{ peso().number_format($details->first()->interested_amount, 2) }}</li>
 		</ul>
 
-		<div class="col-md-8 col-lg-8 col-xl-8">
+		<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
 			<table class="datatable table table-hover" cellspacing="0" role="grid" style="width:100%">
 				<thead class="thead-inverse">
 					<tr>

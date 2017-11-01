@@ -77,7 +77,7 @@
                         { "data": "name", "name" : "name" },
                         { "data": "remittance_dates", "name" : "remittance_dates" }
                     ],
-                    "pageLength" : 8,
+                    "pageLength" : 15,
                     "bLengthChange": false
                     // "fnRowCallback" : function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 

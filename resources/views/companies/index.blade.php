@@ -79,7 +79,8 @@
                     var id = aData.name;
                     $(nRow).attr("data-company-name", id);
                     return nRow;
-                } 
+                },
+                "pageLength": 15 
             });
 
             $('#submitAddCompanyForm').click(function (){

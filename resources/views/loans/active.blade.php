@@ -130,7 +130,7 @@
                     
                     return nRow;
                 },
-                "pageLength" : 7,
+                "pageLength" : 15,
                 "bLengthChange": false  
             });
 

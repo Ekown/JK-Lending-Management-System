@@ -90,7 +90,7 @@
                     
                     return nRow;
                 },
-                "pageLength" : 7  
+                "pageLength" : 15  
             });
 
             // Instantiate the DatePicker Plugin 

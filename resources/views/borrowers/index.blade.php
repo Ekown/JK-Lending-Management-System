@@ -85,7 +85,7 @@
                     { "data": "name", "name" : "borrowers.name" },
                     { "data": "company_name", "name" : "companies.name" }
                 ],
-                "pageLength" : 9 
+                "pageLength" : 15 
             });
 
             // Instantiate the selectize plugin for the company dropdown

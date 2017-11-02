@@ -42,14 +42,9 @@ class UpdateActiveLoans implements ShouldBroadcast
             {
                 // Get all the loans with the corresponding remittance date
                 $query = DB::table('loans')
-                        ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
-                        ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
-                        ->leftJoin('cash_advance_status', 'loans.cash_advance_status_id', '=', 'cash_advance_status.id')
-                        ->leftJoin('term_type', 'loans.term_type_id', '=', 'term_type.id')
-                        ->leftJoin('loan_status', 'loans.loan_status_id', '=', 'loan_status.id')
                         ->whereIn('loans.loan_status_id', [1,3])
                         ->whereIn('loans.remittance_date_id', $arr_date)
-                        ->select('loans.*', 'borrowers.name as borrower_name', 'companies.name as company_name', 'cash_advance_status.name as cash_advance_status', 'term_type.name as term_type', 'loan_status.name as loan_status')
+                        ->select('id', 'remittance_date_id')
                         ->get();
 
                 // Set the loan counter
@@ -62,7 +57,7 @@ class UpdateActiveLoans implements ShouldBroadcast
 
                     // Check if the current loan is already in the active table
                     $check_duplicate = DB::table('active_remittable_loans')
-                                       ->select('loans.*')
+                                       ->select('id')
                                        ->where('loan_id', $loan->id)
                                        ->exists();
 

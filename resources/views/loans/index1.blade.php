@@ -144,7 +144,11 @@
                     if(aData != null)
                     {
                       var amount = aData.amount;
-                      $(nRow).find("td:nth-child(3)").html("{{ peso() }}" + (+amount).toFixed(2));
+                      if(amount != "0")
+                          $(nRow).find("td:nth-child(3)").html("{{ peso() }}" + (+amount).toFixed(2));
+                      else
+                          $(nRow).find("td:nth-child(3)").html("<span style='color:red'>No Remittance</span>");
+                      
                       // console.log(nRow);
                       return nRow;
                     }

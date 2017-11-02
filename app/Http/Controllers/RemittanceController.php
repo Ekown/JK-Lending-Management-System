@@ -15,6 +15,7 @@ class RemittanceController extends Controller
         $this->middleware('auth');
     }
 
+    // Creates a loan remittance record in the database and fires the Remittance Event
     public function createLoan(Request $request)
     {
     	$query = DB::table('loan_remittances')->insert([

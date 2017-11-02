@@ -26,7 +26,7 @@ class AjaxController extends Controller
         $existingRemittanceDate = DB::table('remittance_dates')
                                   ->select('id')
                                   ->get();
-
+ 
         for($i = 0; $i < count($existingRemittanceDate); $i++) 
         {
             if((string)$existingRemittanceDate[$i]->id == (isset($request->addRemittanceDate1)?(string)$request->addRemittanceDate1:(string)$request->addRemittanceDate2))

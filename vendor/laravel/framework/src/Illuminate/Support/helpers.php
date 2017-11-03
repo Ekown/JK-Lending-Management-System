@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\Remittance;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -372,6 +373,22 @@ if (! function_exists('camel_case')) {
     function camel_case($value)
     {
         return Str::camel($value);
+    }
+}
+
+if (! function_exists('check_active_duplicate')) {
+    /**
+     * Check if the current loan id is already in the active remittance table.
+     *
+     * @param  string  $id
+     * @return bool
+     */
+    function check_active_duplicate($id)
+    {
+        return DB::table('active_remittable_loans')
+                   ->select('id')
+                   ->where('loan_id', $id)
+                   ->exists();
     }
 }
 
@@ -759,7 +776,7 @@ if (! function_exists('preg_replace_array')) {
 
 if (! function_exists('ready_active_table')) {
     /**
-     * Ready the active_remittance_table for insertion and update.
+     * Ready the active remittance table for insertion and update.
      *
      * @param  null
      * @return null
@@ -795,10 +812,12 @@ if (! function_exists('ready_active_table')) {
             // Update each loan's status to late and add a zero remittance for yesterday
             foreach ($get_remaining_loans as $loan) 
             {
+                // Update loan status to late
                 $update_loan_status = \DB::table('loans')
                                        ->where('id', $loan->loan_id)
                                        ->update(['loan_status_id' => 3]);
 
+                // Add zero remittances for each loan
                 $add_zero_remittance = \DB::table('loan_remittances')
                                         ->insert([
                                             [
@@ -807,6 +826,54 @@ if (! function_exists('ready_active_table')) {
                                                 'amount' => 0.00
                                             ]
                                         ]);
+
+                // Check if there are already late remittances for the loan 
+                $check_late_amount = \DB::table('late_remittance_amount')
+                                     ->select('amount')
+                                     ->where('loan_id', $loan->loan_id)
+                                     ->first();
+
+                // Get the loan's deduction amount
+                $get_loan_deduction = \DB::table('loans')
+                                     ->select('deduction')
+                                     ->where('id', $loan->loan_id)
+                                     ->first();
+
+                // If there are no late remittances yet
+                if($check_late_amount == null)
+                {                 
+                                                
+                    // Add a new late remittance for the loan
+                    $add_late_remittance = \DB::table('late_remittance_amount')
+                                            ->insert([
+                                                [
+                                                    'loan_id' => $loan->loan_id,
+                                                    'amount' => $get_loan_deduction->deduction
+                                                ]
+                                            ]);
+                }
+                else
+                {   
+                    // Get the current late remittance amount for the loan
+                    $current_late_remittance_amount = \DB::table('late_remittance_amount')
+                                                        ->select('amount')
+                                                        ->where('loan_id', $loan->loan_id)
+                                                        ->first();
+
+                    // Update the current late remittance amount by adding the loan's deduction
+                    $update_late_remittance = \DB::table('late_remittance_amount')
+                                              ->where('loan_id', $loan->loan_id)
+                                              ->update(
+                                                [
+                                                    'amount' => 
+                                                        ($current_late_remittance_amount->amount + 
+                                                         $get_loan_deduction->deduction)
+                                                ]
+                                              );
+                }
+                
+                // Fire the remittance event to change the loan's loan status badge
+                event(new Remittance($loan->loan_id, 0.00, false));
             }
         }
     }

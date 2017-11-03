@@ -22,15 +22,16 @@ class LoanController extends Controller
         $loanBalance = DB::table('loans')
                         ->select('loans.interested_amount', 'loans.loan_status_id')
                         ->where('loans.id', $loan)
-                        ->get();  
+                        ->first();  
 
-        if($totalRemittances->first()->sum >= $loanBalance->first()->interested_amount)
-            $this->updateLoanStatus(2, $loan);
-        else
-        {
-            if($loanBalance->first()->loan_status_id != "3")
-                $this->updateLoanStatus(1, $loan);
-        }
+        // if($totalRemittances->sum >= $loanBalance->interested_amount)
+        //     $this->updateLoanStatus(2, $loan);
+        // else
+        // {
+        //     // Only change the loan status to 'Not Fully Paid' if it was not 'Late'
+        //     if($loanBalance->loan_status_id != "3")
+        //         $this->updateLoanStatus(1, $loan);
+        // }
 
         $details = $this->getLoanDetails($loan);
 

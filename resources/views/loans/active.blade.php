@@ -145,13 +145,20 @@
                 }
             }); 
         
-            // Listens for updates from the server and redraws the datatable
+            // Listens for updates in the active remittable loans table in the database
             Echo.private(`loanMasterListChannel`)
             .listen('UpdateActiveLoans', (e) => {
                 // console.log(e);
                 changeDateBadge();
                 $('.datatable').DataTable().draw(false);
             });    
+
+            // Listens when a loan remittance has been made
+            Echo.private(`loanMasterListChannel`)
+            .listen('Remittance', (e) => {
+                // console.log(e);
+                $('.datatable').DataTable().draw(false);
+            }); 
 
         });
     </script>

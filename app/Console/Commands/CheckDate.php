@@ -49,6 +49,17 @@ class CheckDate extends Command
 
         // $this->info($arr_date[1]);
 
-        $this->info(event(new UpdateActiveLoans));
+        $output = "Check Date Event Successful.";
+
+        try
+        {
+            event(new UpdateActiveLoans);
+        }
+        catch(Exception $e)
+        {
+            $output = $e;
+        }
+
+        $this->info($output);
     }
 }

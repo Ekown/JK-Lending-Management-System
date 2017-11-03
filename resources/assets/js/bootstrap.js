@@ -48,6 +48,7 @@ import Echo from 'laravel-echo'
 window.Pusher = require('pusher-js');
 
 window.Echo = new Echo({
+	"authEndPoint": "/LMS/broadcasting/auth",
     broadcaster: 'pusher',
     key: '8f7f5e63383d8f99671d',
     cluster: 'ap1',

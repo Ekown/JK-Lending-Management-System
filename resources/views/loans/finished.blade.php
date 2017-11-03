@@ -99,6 +99,14 @@
                 window.location = "/loan/record/" + $(this).data("loan-id");
             }
         });
+
+        // Listens for updates from the server and redraws the datatable
+        Echo.private(`loanMasterListChannel`)
+        .listen('Remittance', (e) => {
+            // console.log(e);
+            $('.datatable').DataTable().draw(false);
+        });  
+          
 	});
 </script>
 @endpush

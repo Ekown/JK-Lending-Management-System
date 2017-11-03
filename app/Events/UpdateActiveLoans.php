@@ -56,12 +56,7 @@ class UpdateActiveLoans implements ShouldBroadcast
                     // $arr_id[] = $loan->id;
 
                     // Check if the current loan is already in the active table
-                    $check_duplicate = DB::table('active_remittable_loans')
-                                       ->select('id')
-                                       ->where('loan_id', $loan->id)
-                                       ->exists();
-
-                    if(! $check_duplicate)
+                    if(! check_active_duplicate($loan->id))
                     {
                         // Insert the new loan into the active table
                         $insert_to_active = DB::table('active_remittable_loans')

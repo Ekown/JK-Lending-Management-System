@@ -158,7 +158,7 @@
                     // Get the DataTable API instance
                     var api = this.api();
 
-                    var balance = {{ $loanBalance->first()->interested_amount }};
+                    var balance = {{ $loanBalance->interested_amount }};
                     var res = null;
 
                     var remittances = function() {

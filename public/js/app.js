@@ -172,6 +172,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 window.Pusher = __webpack_require__(4);
 
 window.Echo = new __WEBPACK_IMPORTED_MODULE_0_laravel_echo___default.a({
+  "authEndPoint": "/LMS/broadcasting/auth",
   broadcaster: 'pusher',
   key: '8f7f5e63383d8f99671d',
   cluster: 'ap1',

@@ -25,7 +25,7 @@
             </div>
         </div>
 
-        <table class="datatable table-hover" cellspacing="0" width="100%" role="grid" style="width: 100%;">
+        <table class="datatable table table-hover display" cellspacing="0" width="100%" role="grid" style="width: 100%;">
             <thead class="thead-inverse">
                 <tr>                    
                     <th>Name</th>

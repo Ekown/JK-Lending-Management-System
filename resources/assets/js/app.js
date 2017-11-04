@@ -37,3 +37,7 @@ $.ajaxSetup({
    }
 });
 
+$(function () {
+    $(".preloader").fadeOut();
+});
+

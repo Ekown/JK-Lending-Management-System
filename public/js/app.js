@@ -109,9 +109,13 @@ var assetBaseUrl = "{{ asset('') }}";
 
 // Setup all AJAX requests to always pass the X-CSRF token
 $.ajaxSetup({
-  headers: {
-    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-  }
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
+$(function () {
+    $(".preloader").fadeOut();
 });
 
 /***/ }),

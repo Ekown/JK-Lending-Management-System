@@ -3,95 +3,110 @@
 
 @section ('content')
 
-<div class="modal fade" id="remitModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Remit to Loan</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-      	<form id="remitLoanForm">
-      		<div class="form-control">
-      			<div class="form-group">
-      				<label for="remitLoanDate" class="form-control-label">Date of Loan Remittance:</label>
-                    <input name="remitLoanDate" id="remitLoanDate" class="form-control datepicker" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" data-date-format= "yyyy-mm-dd">
-      			</div>
-      			<div class="form-group">
-      				<label for="remitLoanAmount" class="form-control-label">Loan Remittance Amount:</label>
-                    <input type="number" name="remitLoanAmount" id="remitLoanAmount" class="form-control" value="{{ $details->first()->deduction }}">
-      			</div>
-      		</div>
-      	</form>    
-      </div>
+  <div class="modal fade" id="remitModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Remit to Loan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+        	<form id="remitLoanForm">
+        		<div class="form-control">
+        			<div class="form-group">
+        				<label for="remitLoanDate" class="form-control-label">Date of Loan Remittance:</label>
+                      <input name="remitLoanDate" id="remitLoanDate" class="form-control datepicker" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" data-date-format= "yyyy-mm-dd">
+        			</div>
+        			<div class="form-group">
+        				<label for="remitLoanAmount" class="form-control-label">Loan Remittance Amount:</label>
+                      <input type="number" name="remitLoanAmount" id="remitLoanAmount" class="form-control" value="{{ $details->first()->deduction }}">
+        			</div>
+        		</div>
+        	</form>    
+        </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="resetRemitForm">Cancel</button>
-        <button type="button" class="btn btn-primary" id="submitRemitForm">Remit</button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="resetRemitForm">Cancel</button>
+          <button type="button" class="btn btn-primary" id="submitRemitForm">Remit</button>
+        </div>
+        </div>
       </div>
-      </div>
-    </div>
   </div>
 
+  <section class="charts">
 
+    <div class="container-fluid">
 
-<div class="container-fluid">
-	<h2>Loan Details</h2>
+      <header>
+        <h1 class="h1">Loan Details</h1>
+      </header>
 
-	<div class="row loan-details">
-		<ul class="list-group col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-		  <li class="list-group-item border-0"><b>Loan ID:</b> {{ $details->first()->id }}</li>
-		  <li class="list-group-item border-0"><b>Date of Loan:</b> {{ $details->first()->created_at }}</li>
-		  <li class="list-group-item border-0"><b>Borrower Name:</b> {{ $details->first()->borrower_name }}</li>
-		  <li class="list-group-item border-0"><b>Borrower Company:</b> {{ $details->first()->company_name }}</li> 
-		  <li class="list-group-item border-0">
-		  	<b>Term:</b> {{ ($details->first()->term) }} 
-				@if ($details->first()->term_type_id == 1)
-					{{ "month/s" }}
-				@else
-					{{ "give/s" }}
-				@endif
-		  </li>
-      <li class="list-group-item border-0">
-        <b>Remittance Date:</b> {{ $details->first()->remittance_date }}
-      </li>
-		  <li class="list-group-item border-0"><hr></li>
-		  <li class="list-group-item border-0">
-		  	<b>Loan Status:</b> 
-			<span class="badge" id="loan_status">{{ $details->first()->loan_status }}</span>
-		  </li>
-		  <li class="list-group-item border-0"><b>Loan Percentage:</b> {{ $details->first()->percentage }}%</li>
-		  <li class="list-group-item border-0"><b>Loan Amount:</b> {{ peso().number_format($details->first()->amount, 2) }}</li>
-		  <li class="list-group-item border-0"><b>Interested Amount:</b> {{ peso().number_format($details->first()->interested_amount, 2) }}</li>
-		</ul>
+      <div class="row">
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+          <div class="card">
+            <div class="card-body">
+              <ul class="list-group">
+                <li class="list-group-item border-0"><b>Loan ID:</b> {{ $details->first()->id }}</li>
+                <li class="list-group-item border-0"><b>Date of Loan:</b> {{ $details->first()->created_at }}</li>
+                <li class="list-group-item border-0"><b>Borrower Name:</b> {{ $details->first()->borrower_name }}</li>
+                <li class="list-group-item border-0"><b>Borrower Company:</b> {{ $details->first()->company_name }}</li> 
+                <li class="list-group-item border-0">
+                  <b>Term:</b> {{ ($details->first()->term) }} 
+                  @if ($details->first()->term_type_id == 1)
+                    {{ "month/s" }}
+                  @else
+                    {{ "give/s" }}
+                  @endif
+                </li>
+                <li class="list-group-item border-0">
+                  <b>Remittance Date:</b> {{ $details->first()->remittance_date }}
+                </li>
+                <li class="list-group-item border-0"><hr></li>
+                <li class="list-group-item border-0">
+                  <b>Loan Status:</b> 
+                <span class="badge" id="loan_status">{{ $details->first()->loan_status }}</span>
+                </li>
+                <li class="list-group-item border-0"><b>Loan Percentage:</b> {{ $details->first()->percentage }}%</li>
+                <li class="list-group-item border-0"><b>Loan Amount:</b> {{ peso().number_format($details->first()->amount, 2) }}</li>
+                <li class="list-group-item border-0"><b>Interested Amount:</b> {{ peso().number_format($details->first()->interested_amount, 2) }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
 
-		<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
-			<table class="datatable table table-hover" cellspacing="0" role="grid" style="width:100%">
-				<thead class="thead-inverse">
-					<tr>
-						<th>#</th>
-						<th>Date of Remittance</th>
-						<th>Remittance Amount</th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-        <tfoot>
-          <tr>
-            <th colspan="2"></th>
-            <th id="totalSumColumn"></th>
-          </tr>
-          <tr >
-            <th colspan="2" style="border: none !important"></th>
-            <th id="totalSumColumn" style="border: none !important"></th>
-          </tr>
-        </tfoot>
-			</table>
-		</div>
-	</div>
-</div>	 
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
+          <div class="card">
+            <div class="card-body">
+              <table class="datatable table table-hover" cellspacing="0" role="grid" style="width:100%">
+                <thead class="thead-dark">
+                  <tr>
+                    <th>#</th>
+                    <th>Date of Remittance</th>
+                    <th>Remittance Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th colspan="2"></th>
+                    <th id="totalSumColumn"></th>
+                  </tr>
+                  <tr >
+                    <th colspan="2" style="border: none !important"></th>
+                    <th id="totalSumColumn" style="border: none !important"></th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section> 
 
 @endsection
 

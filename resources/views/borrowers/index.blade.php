@@ -2,60 +2,76 @@
 
 
 @section ('content')
-    <div class="modal fade" id="addBorrowerModal" tabindex="-1" role="dialog" aria-labelledby=" exampleModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Add Borrower</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="addBorrowerForm" style="padding-top: 1em;">
-                        {{ csrf_field() }}
-                    <div class="form-group">
-                        <label for="addBorrowerFormCompany" class="form-control-label">Borrower Company:</label>
-                        <select class="form-control" id="addBorrowerFormCompany" name="addBorrowerCompany1">
-                          <option value="1">-No Company (Default)-</option>
+
+    <section class="charts">
+
+        <div class="container-fluid">
+
+            <div class="modal fade" id="addBorrowerModal" tabindex="-1" role="dialog" aria-labelledby=" exampleModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Borrower</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form id="addBorrowerForm" style="padding-top: 1em;">
+                                {{ csrf_field() }}
+                            <div class="form-group">
+                                <label for="addBorrowerFormCompany" class="form-control-label">Borrower Company:</label>
+                                <select class="form-control" id="addBorrowerFormCompany" name="addBorrowerCompany1">
+                                  <option value="1">-No Company (Default)-</option>
+                    
+                                  @foreach ($companies as $company)
+                                    @if ($company->id != 1)
+                                      <option value="{{ $company->id }}">{{ $company->name }}</option>
+                                    @endif
+                                  @endforeach
+                    
+                                </select>
+                              </div>
+                              <div class="form-group">
+                                <label for="addBorrowerFormName" class="form-control-label">Borrower Name:</label>
+                                <input type="text" class="form-control" id="addBorrowerFormName" name="    addBorrowerName1">
+                              </div>
+                        </form>
+                  </div>
             
-                          @foreach ($companies as $company)
-                            @if ($company->id != 1)
-                              <option value="{{ $company->id }}">{{ $company->name }}</option>
-                            @endif
-                          @endforeach
-            
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label for="addBorrowerFormName" class="form-control-label">Borrower Name:</label>
-                        <input type="text" class="form-control" id="addBorrowerFormName" name="    addBorrowerName1">
-                      </div>
-                </form>
-          </div>
-    
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="resetAddBorrowerForm"> Cancel</button>
-            <button type="button" class="btn btn-primary" id="submitAddBorrowerForm">Submit</button>
-          </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="resetAddBorrowerForm"> Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitAddBorrowerForm">Submit</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <header>
+                <h1 class="h1">Borrower List</h1>
+            </header>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table table-hover" id="datatable" cellspacing="0" width="100%" role="grid" style="width: 100% !important;">
+                                <thead class="thead-dark">
+                                <tr>                    
+                                    <th>Name</th>
+                                    <th>Company</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-
-	<h2>Borrower List</h2>
-
-	<div class="container-fluid">
-        <table class="datatable table table-hover" cellspacing="0" width="100%" role="grid" style="width: 100%;">
-            <thead class="thead-inverse">
-                <tr>                    
-                    <th>Name</th>
-                    <th>Company</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+    </section>
+	
 @endsection
 
 
@@ -64,7 +80,7 @@
 		$(document).ready(function (){
 
 			// Instantiate the server side DataTable
-            $('.datatable').DataTable({
+            $('#datatable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {

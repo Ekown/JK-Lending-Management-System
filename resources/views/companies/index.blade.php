@@ -2,48 +2,66 @@
 
 
 @section ('content')
-    <div class="modal fade" id="addCompanyModal" tabindex="-1" role="dialog" aria-labelledby=" exampleModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Add Company</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="addCompanyForm" style="padding-top: 1em;">
-                {{ csrf_field() }}
-                <div class="form-group">
-                    <label for="addCompanyFormName" class="form-control-label">Company Name:</label>
-                    <input type="text" class="form-control" id="addCompanyFormName" name="    addCompanyFormName">
+
+    <section class="charts">
+
+        <div class="modal fade" id="addCompanyModal" tabindex="-1" role="dialog" aria-labelledby=" exampleModalLabel">
+          <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Company</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form id="addCompanyForm" style="padding-top: 1em;">
+                        {{ csrf_field() }}
+                        <div class="form-group">
+                            <label for="addCompanyFormName" class="form-control-label">Company Name:</label>
+                            <input type="text" class="form-control" id="addCompanyFormName" name="    addCompanyFormName">
+                        </div>
+                    </form>
+                  </div>
+            
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="resetAddCompanyForm"> Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitAddCompanyForm">Submit</button>
+                  </div>
                 </div>
-            </form>
-          </div>
-    
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="resetAddCompanyForm"> Cancel</button>
-            <button type="button" class="btn btn-primary" id="submitAddCompanyForm">Submit</button>
           </div>
         </div>
-      </div>
-    </div>
 
+        <div class="container-fluid">
 
-	<h2>Company List</h2>
+            <header>
+                <h1 class="h1">Company List</h1>
+            </header>
 
-	<div class="container-fluid">
-        <table class="datatable table table-hover" cellspacing="0" width="100%" role="grid" style="width: 100%;">
-            <thead class="thead-inverse">
-                <tr>                    
-                    <th>Name</th>
-                    <th># of Borrowers</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="datatable table table-hover" cellspacing="0" width="100%" role="grid" style="width: 100%;">
+                                <thead class="thead-dark">
+                                    <tr>                    
+                                        <th>Name</th>
+                                        <th># of Borrowers</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+	
+        
+    
 @endsection
 
 

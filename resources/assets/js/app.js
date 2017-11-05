@@ -37,7 +37,8 @@ $.ajaxSetup({
    }
 });
 
+"use strict";
 $(function () {
-    $(".preloader").fadeOut();
+    $("#loader-wrapper").fadeOut('slow');
 });
 

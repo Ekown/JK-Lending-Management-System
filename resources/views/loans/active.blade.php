@@ -5,32 +5,50 @@
 
 {{--     @include ('addLoanModal') --}}
 
-    <div class="container-fluid">
+    <section class="charts">
 
-      <h2>Active Remittable Loans Master List</h2>
-      Current Remittance Date: <span id="remittance_date"></span>
-        <table class="datatable table mdl-data-table__cell--non-numeric table-hover" cellspacing="0"
-            width="100%" role="grid" style="width: 100% !important; font-size: 12px;">
-            <thead class="thead-inverse">
-                <tr>                    
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Company</th>
-                    <th>Date of Loan</th>
-                    <th>Loan Amount</th>   
-                    <th>Interested Amount (Return)</th>   
-                    <th>Percentage</th>
-                    <th>Deduction Amount</th>
-                    <th>Term Type</th>
-                    <th>Term</th>
-                    {{-- <th>Loan Status</th> --}}
-                    <th>Cash Advance Status</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+        <div class="container-fluid">
+
+            <header>
+                <h1 class="h1">Active Remittable Loans Master List</h1>
+            </header>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    Current Remittance Date: <span id="remittance_date" style="font-size: 120% !important;"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table table-hover table-responsive" id="datatable" cellspacing="0" width="100%" style="font-size: 12px !important;">
+                                <thead class="thead-dark">
+                                    <tr>                    
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Company</th>
+                                        <th>Date of Loan</th>
+                                        <th>Loan Amount</th>   
+                                        <th>Interested Amount (Return)</th>   
+                                        <th>Percentage</th>
+                                        <th>Deduction Amount</th>
+                                        <th>Term Type</th>
+                                        <th>Term</th>
+                                        {{-- <th>Loan Status</th> --}}
+                                        <th>Cash Advance Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 
 @endsection
@@ -72,8 +90,7 @@
             changeDateBadge();
 
             // Instantiate the server side DataTable
-            var table = $('.datatable').DataTable({
-                "autoWidth": true,
+            var table = $('#datatable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -125,7 +142,7 @@
 
                         // If the current row's loan status is late, turn the background color to red
                         if(aData.loan_status == "Late")
-                            $(nRow).attr("style", "background-color: #f74949");
+                            $(nRow).attr("style", "background-color: #f79191");
                     }
                     
                     return nRow;
@@ -137,7 +154,7 @@
             
             
             // Makes the datatable row clickable
-            $('.datatable').on('click', 'tbody tr', function() {
+            $('#datatable').on('click', 'tbody tr', function() {
                 if(table.data().count())
                 {
                     // console.log(table.data().count());

@@ -35,7 +35,7 @@ class LoanController extends Controller
 
         $details = $this->getLoanDetails($loan);
 
-    	return view('loans.index1')->with('details', $details)->with('totalRemittances', $totalRemittances)->with('loanBalance', $loanBalance);
+    	return view('loans.record')->with('details', $details)->with('totalRemittances', $totalRemittances)->with('loanBalance', $loanBalance);
     }
 
     private function getLoanDetails($loan_id)

@@ -3,14 +3,14 @@
 
 @section ('content')
 
-@include ('addLoanModal')
+@include ('loans.addLoanModal')
 
     <div class="container-fluid">
 
       <h2>Current Loans Master List</h2>
         <table class="datatable table mdl-data-table__cell--non-numeric table-hover" cellspacing="0"
             width="100%" role="grid" style="width: 100% !important; font-size: 12px;">
-            <thead class="thead-inverse">
+            <thead class="thead-dark">
                 <tr>                    
                     <th>#</th>
                     <th>Name</th>

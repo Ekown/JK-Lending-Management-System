@@ -1,17 +1,19 @@
 
 // Fonts
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
-
+@import '/css/spinner.css';
 
 #loginForm, #resetPasswordForm, #registerForm
 {
 	color: white;
 }
 
+/*
 .container-fluid
 {
   margin-left: -10px !important;
 }
+*/
 
 #totalSumColumn
 {
@@ -53,9 +55,12 @@ body {
  */
 
 h1 {
-  margin-bottom: 20px;
-  padding-bottom: 9px;
-  border-bottom: 1px solid #eee;
+  .text-center mb-5 
+  {
+    margin-bottom: 20px;
+    padding-bottom: 9px;
+  }
+  
 }
 
 /*

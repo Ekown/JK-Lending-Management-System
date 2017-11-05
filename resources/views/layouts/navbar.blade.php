@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+{{-- <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <a class="navbar-brand" href="{{ route('home') }}"><font color="yellow">JK Lending Management System</font></a>
       <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -20,8 +20,8 @@
         </ul>
         <form class="form-inline mt-2 mt-md-0" method="POST" action="{{ route('logout') }}">
           {{ csrf_field() }}
-          {{-- <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> --}}
+          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
           <div class="dropdown">
             <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:white">
               {{ Auth::user()->name }}
@@ -52,4 +52,32 @@
             </li>
           </ul>
           
-        </nav>
+        </nav> --}}
+
+<!-- Side Navbar -->
+    <nav class="side-navbar">
+      <div class="side-navbar-wrapper">
+        <div class="sidenav-header d-flex align-items-center justify-content-center">
+          <div class="sidenav-header-inner text-center">
+            <h2 class="h5 text-uppercase">{{ Auth::user()->name }}</h2><span class="text-uppercase">Admin</span>
+          </div>
+          <div class="sidenav-header-logo"><a href="index.html" class="brand-small text-center"> <strong>J</strong><strong class="text-primary">K</strong></a></div>
+        </div>
+        <div class="main-menu">
+          <ul id="side-main-menu" class="side-menu list-unstyled">                  
+            <li class="{{ (set_active('loans/list/*') || set_active('loan/record/*') == "active")? "active" : "" }}"><a href="#loan-types" data-toggle="collapse" aria-expanded="false"><i class="fa fa-list-alt" aria-hidden="true"></i><span>Loans</span>
+                <div class="arrow pull-right"><i class="fa fa-angle-down"></i></div></a>
+                    <ul id="loan-types" class="collapse list-unstyled">
+                        <li> <a href="{{ route('home') }}">Active</a></li>
+                        <li> <a href="{{ route('currentLoansList') }}">Current</a></li>
+                        <li> <a href="{{ route('finishedLoansList') }}">Finished</a></li>
+                    </ul>
+            </li>
+            <li class="{{ set_active('cash_advances') }}"> <a href="{{ route('cashAdvances') }}"><i class="fa fa-money" aria-hidden="true"></i><span>Cash Advances</span></a></li>
+            <li class="{{ set_active('borrowers') }}"> <a href="{{ route('borrowers') }}"><i class="fa fa-user-circle-o" aria-hidden="true"></i><span>Borrowers</span></a></li>
+            <li class="{{ (set_active('companies') || set_active('companies/*/*') == "active")? "active" : "" }}"> <a href="{{ route('companies') }}"><i class="fa fa-users" aria-hidden="true"></i><span>Companies</span></a></li>
+            <li class="{{ set_active('') }}"> <a href="login.html"><i class="fa fa-line-chart" aria-hidden="true"></i><span>Statistics</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>

@@ -1,41 +1,58 @@
 @extends ('layouts.master')
 
 @section ('content')
-	<h2>Company Name: {{ $company }}</h2>
 
-	<div class="container-fluid">
+    <section class="charts">
 
-        <div class="row">
-            <div class="col-md-2">
-                <strong>Sort By: </strong><select id="remittanceDateSelector">
-                @if ($remitDate == "master")
-                    <option value="master" selected>-No Filter-</option>
-                @else
-                    <option value="master">-No Filter-</option>
-                @endif
+        <div class="container-fluid">
 
-                @foreach ($dates as $date)
-                    @if ($date->id == $remitDate)
-                        <option value="{{ $date->id }}" selected>{{ $date->remittance_date }}</option>
+            <header>
+                <h1 class="h1">Company Name: {{ $company }}</h1>
+            </header>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+                    <strong>Sort By: </strong>
+                    <select id="remittanceDateSelector">
+
+                    @if ($remitDate == "master")
+                        <option value="master" selected>-No Filter-</option>
                     @else
-                        <option value="{{ $date->id }}">{{ $date->remittance_date }}</option>
+                        <option value="master">-No Filter-</option>
                     @endif
-                @endforeach
-                </select>
-            </div>
-        </div>
 
-        <table class="datatable table table-hover display" cellspacing="0" width="100%" role="grid" style="width: 100%;">
-            <thead class="thead-inverse">
-                <tr>                    
-                    <th>Name</th>
-                    <th>Remittance Dates</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+                    @foreach ($dates as $date)
+                        @if ($date->id == $remitDate)
+                            <option value="{{ $date->id }}" selected>{{ $date->remittance_date }}</option>
+                        @else
+                            <option value="{{ $date->id }}">{{ $date->remittance_date }}</option>
+                        @endif
+                    @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="datatable table table-hover display" cellspacing="0" width="100%" role="grid" style="width: 100%;">
+                                <thead class="thead-dark">
+                                    <tr>                    
+                                        <th>Name</th>
+                                        <th>Remittance Dates</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>	
 
 @endsection
 

@@ -30,6 +30,21 @@ class DatatableController extends Controller
         return DataTables::of($query)->make();
     }
 
+    public function showBorrowerLoansList($id)
+    {
+        // Gets all the loans of the borrower
+        $query = DB::table('loans')
+                    ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
+                    ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
+                    ->leftJoin('cash_advance_status', 'loans.cash_advance_status_id', '=', 'cash_advance_status.id')
+                    ->leftJoin('term_type', 'loans.term_type_id', '=', 'term_type.id')
+                    ->leftJoin('loan_status', 'loans.loan_status_id', '=', 'loan_status.id')
+                    ->where('loans.borrower_id', '=', $id)
+                    ->select('loans.*', 'borrowers.name as borrower_name', 'companies.name as company_name', 'cash_advance_status.name as cash_advance_status', 'term_type.name as term_type', 'loan_status.name as loan_status');
+
+        return DataTables::of($query)->make();
+    }
+
     public function showFinishedLoanMasterList()
     {
         // Gets all the latest finished ledgers with their associated column data from other tables

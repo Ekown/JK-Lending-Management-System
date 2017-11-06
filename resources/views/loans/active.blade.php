@@ -14,7 +14,7 @@
             </header>
 
             <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 currentRemittanceDate">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 currentRemittanceDate" style="margin-bottom: 30px;">
                     Current Remittance Date: <span id="remittance_date" style="font-size: 120% !important;"></span>
                 </div>
             </div>
@@ -166,12 +166,12 @@
             .listen('UpdateActiveLoans', (e) => {
                 // console.log(e);
                 changeDateBadge();
-                $('.datatable').DataTable().draw(false);
+                $('#datatable').DataTable().draw(false);
             })
-            // Listens when a significant loan remittance has been made
+            // Listens for significant remittances
             .listen('Remittance', (e) => {
                 // console.log(e);
-                $('.datatable').DataTable().draw(false);
+                $('#datatable').DataTable().draw(false);
             });   
 
         });

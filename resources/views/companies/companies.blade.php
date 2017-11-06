@@ -11,7 +11,7 @@
             </header>
 
             <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+                <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2" style="margin-bottom: 30px;">
                     <strong>Sort By: </strong>
                     <select id="remittanceDateSelector">
 
@@ -95,13 +95,15 @@
                         { "data": "remittance_dates", "name" : "remittance_dates" }
                     ],
                     "pageLength" : 15,
-                    "bLengthChange": false
-                    // "fnRowCallback" : function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-
-                    //     var id = aData.company_name;
-                    //     $(nRow).attr("data-company-name", id);
-                    //     return nRow;
-                    // }, 
+                    "bLengthChange": false,
+                    "fnRowCallback" : function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                        if(aData != null)
+                        {
+                            var id = aData.id;
+                            console.log(id);
+                            $(nRow).attr("data-borrower-id", id);
+                        }
+                    }, 
                     
       
                 });    
@@ -112,7 +114,14 @@
                 window.location = selectizeControl.getValue();
             });
 
-			
+			// Makes the datatable row clickable
+            $('.datatable').on('click', 'tbody tr', function() {
+                if(table.data().count())
+                  {
+                    // console.log($(this).data("borrower-id"));
+                    window.location = "/borrower/" + $(this).data("borrower-id") + "/profile";
+                  }
+            });
 
 		});
 	</script>

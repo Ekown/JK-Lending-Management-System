@@ -52,8 +52,8 @@ class BorrowerController extends Controller
                     ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
                     ->leftJoin('remittance_dates', 'loans.remittance_date_id', '=', 'remittance_dates.id')
                     ->where('companies.name', '=', $request->selectedCompany)
-                    ->groupBy('borrowers.name')
-                    ->selectRaw("GROUP_CONCAT(DISTINCT(remittance_dates.remittance_date) SEPARATOR ', ') as remittance_dates, borrowers.name as name");
+                    ->groupBy('borrowers.name', 'borrowers.id')
+                    ->selectRaw("GROUP_CONCAT(DISTINCT(remittance_dates.remittance_date) SEPARATOR ', ') as remittance_dates, borrowers.name as name, borrowers.id as id");
 
             return DataTables::of($query)->make(); 
         }
@@ -89,6 +89,11 @@ class BorrowerController extends Controller
                 ->where('borrowers.id', $id)
                 ->select('borrowers.*', 'companies.name as company')
                 ->first();
+    }
+
+    public function loans($id)
+    {
+        return view('borrowers.loans')->with('borrowerId', $id);
     }
 
     public function profile($id)

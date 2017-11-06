@@ -30,7 +30,11 @@
 									<div class="col-xl-6 col-sm-6 col-md-6">
 										<div class="wrapper count-title d-flex">
 							                <div class="icon"><i class="icon-check"></i></div>
-							                <div class="name"><strong class="text-uppercase">Loans &nbsp;<i class="fa fa-arrow-circle-o-right" aria-hidden="true" style="font-size: initial;"></i></strong><span id="loan_date"></span>
+							                <div class="name"><strong class="text-uppercase">Loans &nbsp;
+							                <a href="{{ route('borrowerLoans', ['id' => $profile->id]) }}">
+							                	<i class="fa fa-arrow-circle-o-right" aria-hidden="true" style="font-size: initial; cursor: pointer;"></i>
+							                </a>
+							                </strong><span id="loan_date"></span>
 							                  <div class="count-number" id="loan"></div>
 							                </div>
 							             </div>
@@ -46,7 +50,11 @@
 							        <div class="col-xl-6 col-sm-6 col-md-6">
 										<div class="wrapper count-title d-flex">
 							                <div class="icon"><i class="icon-list"></i></div>
-							                <div class="name"><strong class="text-uppercase">Cash Advances &nbsp;<i class="fa fa-arrow-circle-o-right" aria-hidden="true" style="font-size: initial;"></i></strong><span id="loan_date"></span></strong><span id="cash_date"></span>
+							                <div class="name"><strong class="text-uppercase">Cash Advances &nbsp;
+							                <a href="{{ route('borrowerCashAdvances', ['id' => $profile->id]) }}">
+							                	<i class="fa fa-arrow-circle-o-right" aria-hidden="true" style="font-size: initial; cursor: pointer;"></i>
+							                </a>
+							            </strong><span id="loan_date"></span></strong><span id="cash_date"></span>
 							                  <div class="count-number" id="cash"></div>
 							                </div>
 							             </div>

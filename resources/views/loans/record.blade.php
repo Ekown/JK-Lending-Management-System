@@ -48,12 +48,12 @@
           <div class="card">
             <div class="card-body">
               <ul class="list-group">
-                <li class="list-group-item border-0"><b>Loan ID:</b> {{ $details->first()->id }}</li>
-                <li class="list-group-item border-0"><b>Date of Loan:</b> {{ $details->first()->created_at }}</li>
-                <li class="list-group-item border-0"><b>Borrower Name:</b> {{ $details->first()->borrower_name }}</li>
-                <li class="list-group-item border-0"><b>Borrower Company:</b> {{ $details->first()->company_name }}</li> 
+                <li class="list-group-item border-0"><strong>Loan ID:</strong> {{ $details->first()->id }}</li>
+                <li class="list-group-item border-0"><strong>Date of Loan:</strong> {{ $details->first()->created_at }}</li>
+                <li class="list-group-item border-0"><strong>Borrower Name:</strong> {{ $details->first()->borrower_name }}</li>
+                <li class="list-group-item border-0"><strong>Borrower Company:</strong> {{ $details->first()->company_name }}</li> 
                 <li class="list-group-item border-0">
-                  <b>Term:</b> {{ ($details->first()->term) }} 
+                  <strong>Term:</strong> {{ ($details->first()->term) }} 
                   @if ($details->first()->term_type_id == 1)
                     {{ "month/s" }}
                   @else
@@ -61,16 +61,16 @@
                   @endif
                 </li>
                 <li class="list-group-item border-0">
-                  <b>Remittance Date:</b> {{ $details->first()->remittance_date }}
+                  <strong>Remittance Date:</strong> {{ $details->first()->remittance_date }}
                 </li>
                 <li class="list-group-item border-0"><hr></li>
                 <li class="list-group-item border-0">
-                  <b>Loan Status:</b> 
+                  <strong>Loan Status:</strong> 
                 <span class="badge" id="loan_status">{{ $details->first()->loan_status }}</span>
                 </li>
-                <li class="list-group-item border-0"><b>Loan Percentage:</b> {{ $details->first()->percentage }}%</li>
-                <li class="list-group-item border-0"><b>Loan Amount:</b> {{ peso().number_format($details->first()->amount, 2) }}</li>
-                <li class="list-group-item border-0"><b>Interested Amount:</b> {{ peso().number_format($details->first()->interested_amount, 2) }}</li>
+                <li class="list-group-item border-0"><strong>Loan Percentage:</strong> {{ $details->first()->percentage }}%</li>
+                <li class="list-group-item border-0"><strong>Loan Amount:</strong> {{ peso().number_format($details->first()->amount, 2) }}</li>
+                <li class="list-group-item border-0"><strong>Interested Amount:</strong> {{ peso().number_format($details->first()->interested_amount, 2) }}</li>
               </ul>
             </div>
           </div>
@@ -90,11 +90,11 @@
                 <tbody>
                 </tbody>
                 <tfoot>
-                  <tr>
+                  <tr class="totalSumColumn">
                     <th colspan="2"></th>
                     <th id="totalSumColumn"></th>
                   </tr>
-                  <tr >
+                  <tr class="totalSumColumn">
                     <th colspan="2" style="border: none !important"></th>
                     <th id="totalSumColumn" style="border: none !important"></th>
                   </tr>
@@ -209,7 +209,8 @@
                     
                   
                 },
-                "pageLength": 10
+                "pageLength": 10,
+                "order": [[ 1, "asc" ]]
                 // "footerCallback": function( tfoot, data, start, end, display ) {
                 //   $(tfoot).find('th').eq(0).html( "Total Remittance Amount: ");
                 //   $(tfoot).find('th').eq(1).html({{ $totalRemittances->first()->sum }});

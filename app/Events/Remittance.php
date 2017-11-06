@@ -154,18 +154,31 @@ class Remittance implements ShouldBroadcast
     public function broadcastOn()
     {
 
-        // If the loan is paid or not fully paid, broadcast to the Loan and Loan Master List Channels
+        // Get the borrower for the loan
+        $getBorrowerId = DB::table('loans')
+                        ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
+                        ->where('loans.id', $this->loanId)
+                        ->select('borrowers.id')
+                        ->first();
+
+
+        // If the loan is paid or not fully paid, broadcast to the Loan, Loan Master List, and 
+        // Borrrower Channels
         if($this->updateLoanStatus == "Paid" || $this->updateLoanStatus == "Not Fully Paid")
         {
             return [
                 new PrivateChannel('loanChannel.'.$this->loanId),
-                new PrivateChannel('loanMasterListChannel')
+                new PrivateChannel('loanMasterListChannel'),
+                new PrivateChannel('borrowerChannel.'.$getBorrowerId->id)
             ];
         }
-        // If else, broadcast only on the Loan Channel
+        // If else, broadcast only on the Loan and Borrowers Channel
         else
         {
-            return new PrivateChannel('loanChannel.'.$this->loanId);
+            return [
+                new PrivateChannel('loanChannel.'.$this->loanId),
+                new PrivateChannel('borrowerChannel.'.$getBorrowerId->id)
+            ];
         }
         
 

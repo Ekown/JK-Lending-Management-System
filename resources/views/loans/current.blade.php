@@ -5,32 +5,46 @@
 
 @include ('loans.addLoanModal')
 
-    <div class="container-fluid">
+    <section class="charts">
+        
+        <div class="container-fluid">
 
-      <h2>Current Loans Master List</h2>
-        <table class="datatable table mdl-data-table__cell--non-numeric table-hover" cellspacing="0"
-            width="100%" role="grid" style="width: 100% !important; font-size: 12px;">
-            <thead class="thead-dark">
-                <tr>                    
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Company</th>
-                    <th>Date of Loan</th>
-                    <th>Loan Amount</th>   
-                    <th>Interested Amount (Return)</th>   
-                    <th>Percentage</th>
-                    <th>Deduction Amount</th>
-                    <th>Term Type</th>
-                    <th>Term</th>
-                    {{-- <th>Loan Status</th> --}}
-                    <th>Cash Advance Status</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+            <header>
+                <h1 class="h1">Current Loans Master List</h1>
+            </header>
 
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="datatable table table-hover table-responsive" cellspacing="0" width="100%" role="grid" style="width: 100% !important; font-size: 12px;">
+                                <thead class="thead-dark">
+                                    <tr>                    
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Company</th>
+                                        <th>Date of Loan</th>
+                                        <th>Loan Amount</th>   
+                                        <th>Interested Amount (Return)</th>   
+                                        <th>Percentage</th>
+                                        <th>Deduction Amount</th>
+                                        <th>Term Type</th>
+                                        <th>Term</th>
+                                        {{-- <th>Loan Status</th> --}}
+                                        <th>Cash Advance Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>        
 
 @endsection
 
@@ -214,6 +228,9 @@
             Echo.private(`loanMasterListChannel`)
             .listen('Remittance', (e) => {
                 // console.log(e);
+                $('.datatable').DataTable().draw(false);
+            })
+            .listen('AddLoanRecord', (e) => {
                 $('.datatable').DataTable().draw(false);
             });    
 

@@ -77,8 +77,7 @@ class DatatableController extends Controller
     {
         $query = DB::table('borrowers')
                     ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
-                    ->select('borrowers.*', 'companies.name as company_name')
-                    ->orderBy('borrowers.name', 'asc');
+                    ->select('borrowers.*', 'companies.name as company_name');
 
         return DataTables::of($query)->make();
     }

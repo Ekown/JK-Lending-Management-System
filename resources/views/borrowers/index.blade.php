@@ -80,7 +80,7 @@
 		$(document).ready(function (){
 
 			// Instantiate the server side DataTable
-            $('#datatable').DataTable({
+            var table = $('#datatable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -101,7 +101,16 @@
                     { "data": "name", "name" : "borrowers.name" },
                     { "data": "company_name", "name" : "companies.name" }
                 ],
-                "pageLength" : 15 
+                "pageLength" : 15,
+                "fnRowCallback" : function (nRow, aData, iDisplayIndex, iDisplayIndexFull){
+                    if(aData != null)
+                    {
+                        var id = aData.id;
+
+                        $(nRow).attr("data-borrower-id", id);
+                    }
+                },
+                "order" : [[ 0, "asc"]]
             });
 
             // Instantiate the selectize plugin for the company dropdown
@@ -126,6 +135,15 @@
                         $('.datatable').DataTable().draw(false);
                     }
                 });
+            });
+
+            // Makes the datatable row clickable
+            $('#datatable').on('click', 'tbody tr', function() {
+                if(table.data().count())
+                  {
+                    // console.log($(this).data("borrower-id"));
+                    window.location = "/borrower/" + $(this).data("borrower-id") + "/profile";
+                  }
             });
 		});
 	</script>

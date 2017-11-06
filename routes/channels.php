@@ -26,3 +26,7 @@ Broadcast::channel('loanMasterListChannel', function () {
 Broadcast::channel('updateActiveLoans', function () {
     return true;
 });
+
+Broadcast::channel('borrowerChannel.{id}', function () {
+    return true;
+});

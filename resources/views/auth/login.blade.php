@@ -4,7 +4,7 @@
 
     <div class="container py-5">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-xs-12 col-sm-12 col-md-12">
             <h1 class="text-center mb-5" style="font-family: 'Raleway'; color: white; font-size: 2.5em;">J<span style="color: #33b35a">K</span> Lending Management System</h1>
             <div class="row">
                 <div class="col-md-6 mx-auto">

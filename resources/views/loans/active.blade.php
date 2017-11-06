@@ -14,7 +14,7 @@
             </header>
 
             <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 currentRemittanceDate">
                     Current Remittance Date: <span id="remittance_date" style="font-size: 120% !important;"></span>
                 </div>
             </div>
@@ -149,8 +149,7 @@
                 },
                 "pageLength" : 15,
                 "bLengthChange": false  
-            });
-
+            }); 
             
             
             // Makes the datatable row clickable
@@ -168,14 +167,12 @@
                 // console.log(e);
                 changeDateBadge();
                 $('.datatable').DataTable().draw(false);
-            });    
-
-            // Listens when a loan remittance has been made
-            Echo.private(`loanMasterListChannel`)
+            })
+            // Listens when a significant loan remittance has been made
             .listen('Remittance', (e) => {
                 // console.log(e);
                 $('.datatable').DataTable().draw(false);
-            }); 
+            });   
 
         });
     </script>

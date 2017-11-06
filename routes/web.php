@@ -51,6 +51,9 @@ Route::get('cash_advances', 'CashAdvanceController@show')->name('cashAdvances');
 // GET request for the borrower list page
 Route::get('borrowers', 'BorrowerController@show')->name('borrowers');
 
+// GET request for the wild card borrower page
+Route::get('borrower/{id}/profile', 'BorrowerController@profile');
+
 // GET request for the company list page
 Route::get('companies', 'CompanyController@show')->name('companies');
 
@@ -59,6 +62,8 @@ Route::get('companies/{company}/{date}', 'CompanyController@show');
 
 // GET request for the wild card borrower page
 Route::get('loan/record/{loan}', 'LoanController@show');
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -103,6 +108,9 @@ Route::post('loan/record/{loan}/remittances', 'DatatableController@showLoanRemit
 
 // AJAX request for getting loan remittances by loan
 Route::post('loan/record/{loan}/remittances/sum', 'LoanController@readTotalRemittance');
+
+// AJAX request for getting loan remittances by loan
+Route::post('borrower/{borrower}/profile/number/loans', 'BorrowerController@readLoans');
 
 // AJAX request for getting the current remittance date
 Route::post('loan/list/active/remittance_date', 'RemittanceController@getCorrespondingDate')->name('getCorrespondingDate');

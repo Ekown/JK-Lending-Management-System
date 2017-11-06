@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AddLoanRecord;
 use App\Events\UpdateActiveLoans;
 use App\Http\Controllers\BorrowerController;
 use Illuminate\Http\Request;
@@ -114,9 +115,11 @@ class AjaxController extends Controller
 
                 event(new UpdateActiveLoans(false));
 
-                return Response::json($insertIntoActive);
+                break;
             }
-        }      
+        }
+
+        event(new AddLoanRecord((isset($borrower_id)?$borrower_id->first()->id:$request->addBorrowerName2)));      
 
         return Response::json($createLoanRecord);  
         

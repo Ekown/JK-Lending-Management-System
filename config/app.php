@@ -169,6 +169,7 @@ return [
          * Package Service Providers...
          */
         Yajra\DataTables\DataTablesServiceProvider::class,
+        Proengsoft\JsValidation\JsValidationServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -229,6 +230,7 @@ return [
 
         /* Package Aliases */
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
+        'JsValidator' => Proengsoft\JsValidation\Facades\JsValidatorFacade::class
 
     ],
 

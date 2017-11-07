@@ -112,6 +112,11 @@
                     window.location = "/loan/record/" + $(this).data("loan-id");
                 }
             });
+
+            Echo.private(`borrowerChannel.{{ $borrowerId }}`)
+            .listen('AddLoanRecord', (e) => {
+                $('.datatable').DataTable().draw(false);
+            }); 
 		});
 	</script>
 @endpush

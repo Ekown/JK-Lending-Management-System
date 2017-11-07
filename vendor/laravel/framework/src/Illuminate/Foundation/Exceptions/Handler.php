@@ -198,9 +198,9 @@ class Handler implements ExceptionHandlerContract
         if ($e instanceof ModelNotFoundException) {
             $e = new NotFoundHttpException($e->getMessage(), $e);
         } elseif ($e instanceof AuthorizationException) {
-            $e = new AccessDeniedHttpException($e->getMessage());
+            $e = new AccessDeniedHttpException($e->getMessage(), $e);
         } elseif ($e instanceof TokenMismatchException) {
-            $e = new HttpException(419, $e->getMessage());
+            $e = new HttpException(419, $e->getMessage(), $e);
         }
 
         return $e;
@@ -216,7 +216,7 @@ class Handler implements ExceptionHandlerContract
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         return $request->expectsJson()
-                    ? response()->json(['message' => 'Unauthenticated.'], 401)
+                    ? response()->json(['message' => $exception->getMessage()], 401)
                     : redirect()->guest(route('login'));
     }
 
@@ -364,6 +364,12 @@ class Handler implements ExceptionHandlerContract
             $files = new Filesystem;
 
             $handler->handleUnconditionally(true);
+
+            foreach (config('app.debug_blacklist', []) as $key => $secrets) {
+                foreach ($secrets as $secret) {
+                    $handler->blacklist($key, $secret);
+                }
+            }
 
             $handler->setApplicationPaths(
                 array_flip(Arr::except(

@@ -2,33 +2,12 @@
 
 namespace Yajra\DataTables;
 
-use Illuminate\Support\ServiceProvider;
 use Yajra\DataTables\Utilities\Config;
+use Illuminate\Support\ServiceProvider;
 use Yajra\DataTables\Utilities\Request;
 
 class DataTablesServiceProvider extends ServiceProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
-
-    /**
-     * Bootstrap the application events.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        $this->mergeConfigFrom(__DIR__ . '/config/datatables.php', 'datatables');
-
-        $this->publishes([
-            __DIR__ . '/config/datatables.php' => config_path('datatables.php'),
-        ], 'datatables');
-    }
-
     /**
      * Register the service provider.
      *
@@ -39,6 +18,8 @@ class DataTablesServiceProvider extends ServiceProvider
         if ($this->isLumen()) {
             require_once 'lumen.php';
         }
+
+        $this->setupAssets();
 
         $this->app->alias('datatables', DataTables::class);
         $this->app->singleton('datatables', function () {
@@ -53,6 +34,43 @@ class DataTablesServiceProvider extends ServiceProvider
     }
 
     /**
+     * Boot the instance, add macros for datatable engines.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $engines = config('datatables.engines');
+        foreach ($engines as $engine => $class) {
+            $engine = camel_case($engine);
+
+            if (! method_exists(DataTables::class, $engine) && ! DataTables::hasMacro($engine)) {
+                DataTables::macro($engine, function () use ($class) {
+                    if (! call_user_func_array([$class, 'canCreate'], func_get_args())) {
+                        throw new \InvalidArgumentException();
+                    }
+
+                    return call_user_func_array([$class, 'create'], func_get_args());
+                });
+            }
+        }
+    }
+
+    /**
+     * Setup package assets.
+     *
+     * @return void
+     */
+    protected function setupAssets()
+    {
+        $this->mergeConfigFrom($config = __DIR__ . '/config/datatables.php', 'datatables');
+
+        if ($this->app->runningInConsole()) {
+            $this->publishes([$config => config_path('datatables.php')], 'datatables');
+        }
+    }
+
+    /**
      * Check if app uses Lumen.
      *
      * @return bool
@@ -60,19 +78,5 @@ class DataTablesServiceProvider extends ServiceProvider
     protected function isLumen()
     {
         return str_contains($this->app->version(), 'Lumen');
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return string[]
-     */
-    public function provides()
-    {
-        return [
-            'datatables',
-            'datatables.config',
-            'datatables.request',
-        ];
     }
 }

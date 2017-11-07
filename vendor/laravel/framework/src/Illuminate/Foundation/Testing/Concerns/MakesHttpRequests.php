@@ -26,6 +26,13 @@ trait MakesHttpRequests
     protected $serverVariables = [];
 
     /**
+     * Indicates whether redirects should be followed.
+     *
+     * @var bool
+     */
+    protected $followRedirects = false;
+
+    /**
      * Define additional headers to be sent with the request.
      *
      * @param  array $headers
@@ -101,6 +108,29 @@ trait MakesHttpRequests
         }
 
         return $this;
+    }
+
+    /**
+     * Automatically follow any redirects returned from the response.
+     *
+     * @return $this
+     */
+    public function followingRedirects()
+    {
+        $this->followRedirects = true;
+
+        return $this;
+    }
+
+    /**
+     * Set the referer header to simulate a previous request.
+     *
+     * @param  string  $url
+     * @return $this
+     */
+    public function from(string $url)
+    {
+        return $this->withHeader('referer', $url);
     }
 
     /**
@@ -294,6 +324,10 @@ trait MakesHttpRequests
             $request = Request::createFromBase($symfonyRequest)
         );
 
+        if ($this->followRedirects) {
+            $response = $this->followRedirects($response);
+        }
+
         $kernel->terminate($request, $response);
 
         return $this->createTestResponse($response);
@@ -341,7 +375,7 @@ trait MakesHttpRequests
      */
     protected function formatServerHeaderKey($name)
     {
-        if (! Str::startsWith($name, 'HTTP_') && $name !== 'CONTENT_TYPE') {
+        if (! Str::startsWith($name, 'HTTP_') && $name != 'CONTENT_TYPE' && $name != 'REMOTE_ADDR') {
             return 'HTTP_'.$name;
         }
 
@@ -373,6 +407,23 @@ trait MakesHttpRequests
         }
 
         return $files;
+    }
+
+    /**
+     * Follow a redirect chain until a non-redirect is received.
+     *
+     * @param  \Illuminate\Http\Response  $response
+     * @return \Illuminate\Http\Response
+     */
+    protected function followRedirects($response)
+    {
+        while ($response->isRedirect()) {
+            $response = $this->get($response->headers->get('Location'));
+        }
+
+        $this->followRedirects = false;
+
+        return $response;
     }
 
     /**

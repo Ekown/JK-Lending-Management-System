@@ -60,7 +60,7 @@
                 ajax: {
                     method : "POST",
                     url : "{{ route('masterList') }}",
-                    async: false             
+                    async: true             
                 },
                 dom: 'Bfrtip',
                 buttons: [
@@ -142,39 +142,44 @@
             // Submit a POST AJAX request to add the loan record
             $('#submitAddLoanForm').click(function() {
 
-                // Hide the modal after submitting
-                $('#addLoanModal').modal('hide')
-
                 // Check which form is filled-up and submitted
                 if($('#new').hasClass('active'))
                 {
-                    var form = $('#addLoanRecordForm1');
+                    // var form = $('#addLoanRecordForm1');
+                    var form = 'addLoanRecordForm1';
+                    // if($('#addBorrowerName1').val() == "")
+                    //     console.log('no borrower name');
                 }
                 else if($('#existing').hasClass('active'))
                 {
-                    var form = $('#addLoanRecordForm2');
+                    // var form = $('#addLoanRecordForm2');
+                    var form = 'addLoanRecordForm2';                   
                 }
 
-                // AJAX request for submiting the loan form
-                $.ajax({
-                    method: "POST",
-                    url: "{{ route('addLoan') }}",
-                    data: form.serialize(),
-                    success: function(){
-                        console.log("success");
-                        $('.datatable').DataTable().draw(false);
-                    },
-                    error: function(){
-                        console.log("error");
-                    }
-                });
+                if(addLoanValidate(form) == true)
+                {
+                    // AJAX request for submiting the loan form
+                    $.ajax({
+                        method: "POST",
+                        url: "{{ route('addLoan') }}",
+                        data: $('#'+form).serialize(),
+                        success: function(){
+                            console.log("success");
+                            $('.datatable').DataTable().draw(false);
+                            // Hide the modal after submitting
+                            $('#addLoanModal').modal('hide')
+                        },
+                        error: function(){
+                            console.log("error");
+                        }
+                    });
+                }
+                
             });
 
             var $select = $('#addBorrowerName2').selectize();
             var selectize = $select[0].selectize;
-            var defaultBorrowers = [];
-
-            
+            var defaultBorrowers = [];            
 
             // Instantiate the Selectize Plugin
             $('#addBorrowerCompany1, #addBorrowerCompany2, #addLoanTermType1, #addLoanTermType2').selectize({
@@ -224,6 +229,9 @@
                 }
             });
 
+            //Add Loan Modal Form Validations
+            
+
             // Listens for updates from the server and redraws the datatable
             Echo.private(`loanMasterListChannel`)
             .listen('Remittance', (e) => {
@@ -236,4 +244,6 @@
 
         });
     </script>
+
 @endpush
+

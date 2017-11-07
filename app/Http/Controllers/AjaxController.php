@@ -18,9 +18,23 @@ class AjaxController extends Controller
         $this->middleware('auth');
     }
 
+    public function checkIfUniqueBorrower(Request $request)
+    {
+        return Response::json(DB::table('borrowers')
+                    ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
+                    ->where([
+                        ['borrowers.name', $request->name],
+                        ['companies.id', $request->company]
+                    ])
+                    ->select('borrowers.name as name', 'companies.id as company')
+                    ->exists());
+        
+    }
+
     // Creates a new loan record and appends it into the database
     public function createLoan(Request $request)
     {
+
         $exists = false;
 
         // Check if the given remittance date exists in the database

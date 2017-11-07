@@ -2,10 +2,12 @@
 
 namespace Yajra\DataTables;
 
-use Illuminate\Support\Collection;
+use Illuminate\Support\Traits\Macroable;
 
 class DataTables
 {
+    use Macroable;
+
     /**
      * DataTables request object.
      *
@@ -45,15 +47,16 @@ class DataTables
         $engines  = config('datatables.engines');
         $builders = config('datatables.builders');
 
-        if (is_array($source)) {
-            $source = new Collection($source);
-        }
-
+        $args = func_get_args();
         foreach ($builders as $class => $engine) {
             if ($source instanceof $class) {
-                $class = $engines[$engine];
+                return call_user_func_array([$engines[$engine], 'create'], $args);
+            }
+        }
 
-                return new $class($source);
+        foreach ($engines as $engine => $class) {
+            if (call_user_func_array([$engines[$engine], 'canCreate'], $args)) {
+                return call_user_func_array([$engines[$engine], 'create'], $args);
             }
         }
 
@@ -81,40 +84,46 @@ class DataTables
     }
 
     /**
-     * DataTables using Query Builder.
-     *
-     * @param \Illuminate\Database\Query\Builder|mixed $builder
-     * @return \Yajra\DataTables\QueryDataTable
+     * @deprecated Please use query() instead, this method will be removed in a next version.
+     * @param $builder
+     * @return QueryDataTable
      */
     public function queryBuilder($builder)
     {
-        return new QueryDataTable($builder);
+        return $this->query($builder);
+    }
+
+    /**
+     * DataTables using Query.
+     *
+     * @param \Illuminate\Database\Query\Builder|mixed $builder
+     * @return DataTableAbstract|QueryDataTable
+     */
+    public function query($builder)
+    {
+        return QueryDataTable::create($builder);
     }
 
     /**
      * DataTables using Eloquent Builder.
      *
      * @param \Illuminate\Database\Eloquent\Builder|mixed $builder
-     * @return \Yajra\DataTables\EloquentDataTable
+     * @return DataTableAbstract|EloquentDataTable
      */
     public function eloquent($builder)
     {
-        return new EloquentDataTable($builder);
+        return EloquentDataTable::create($builder);
     }
 
     /**
      * DataTables using Collection.
      *
      * @param \Illuminate\Support\Collection|array $collection
-     * @return \Yajra\DataTables\CollectionDataTable
+     * @return DataTableAbstract|CollectionDataTable
      */
     public function collection($collection)
     {
-        if (is_array($collection)) {
-            $collection = new Collection($collection);
-        }
-
-        return new CollectionDataTable($collection);
+        return CollectionDataTable::create($collection);
     }
 
     /**
@@ -125,7 +134,7 @@ class DataTables
      */
     public function getHtmlBuilder()
     {
-        if (!class_exists('\Yajra\DataTables\Html\Builder')) {
+        if (! class_exists('\Yajra\DataTables\Html\Builder')) {
             throw new \Exception('Please install yajra/laravel-datatables-html to be able to use this function.');
         }
 

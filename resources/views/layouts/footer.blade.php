@@ -61,6 +61,8 @@
 
 <script src="{{ asset('js/front.js') }}"></script>
 
+<script src="{{ asset('js/all.js') }}"></script>
+
 <!-- Scripts -->
 <script src="{{ mix('js/app.js') }}"></script>
 

@@ -10,4 +10,5 @@ npm-debug.log
 yarn-error.log
 .env
 LMS.zip
-
+/public/plugins/jquery-validation/demo
+/public/plugins/jquery-validation/test

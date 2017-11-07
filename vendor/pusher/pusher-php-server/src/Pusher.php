@@ -62,7 +62,7 @@ class Pusher
 
             $this->settings['host'] = $host;
 
-            $this->log('Legacy $host parameter provided: '.
+            $this->log('INFO: Legacy $host parameter provided: '.
                 $this->settings['scheme'].' host: '.$this->settings['host']);
         }
 
@@ -250,7 +250,7 @@ class Pusher
 
         $full_url = $domain.$s_url.'?'.$signed_query;
 
-        $this->log('create_curl( '.$full_url.' )');
+        $this->log('INFO: create_curl( '.$full_url.' )');
 
         // Create or reuse existing curl handle
         if (null === $this->ch) {
@@ -304,10 +304,10 @@ class Pusher
         $response['status'] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if ($response['body'] === false || $response['status'] < 200 || 400 <= $response['status']) {
-            $this->log('exec_curl error: '.curl_error($ch));
+            $this->log('ERROR: exec_curl error: '.curl_error($ch));
         }
 
-        $this->log('exec_curl response: '.print_r($response, true));
+        $this->log('INFO: exec_curl response: '.print_r($response, true));
 
         return $response;
     }
@@ -402,7 +402,7 @@ class Pusher
      * @param array|string $channels        A channel name or an array of channel names to publish the event on.
      * @param string       $event
      * @param mixed        $data            Event data
-     * @param string       $socket_id       [optional]
+     * @param string|null  $socket_id       [optional]
      * @param bool         $debug           [optional]
      * @param bool         $already_encoded [optional]
      *
@@ -411,7 +411,6 @@ class Pusher
     public function trigger($channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false)
     {
         if (is_string($channels) === true) {
-            $this->log('->trigger received string channel "'.$channels.'". Converting to array.');
             $channels = array($channels);
         }
 
@@ -426,7 +425,7 @@ class Pusher
 
         // json_encode might return false on failure
         if (!$data_encoded) {
-            $this->Log('Failed to perform json_encode on the the provided data: '.print_r($data, true));
+            $this->Log('ERROR: Failed to perform json_encode on the the provided data: '.print_r($data, true));
         }
 
         $post_params = array();
@@ -444,7 +443,7 @@ class Pusher
 
         $ch = $this->create_curl($this->ddn_domain(), $s_url, 'POST', $query_params);
 
-        $this->log('trigger POST: '.$post_value);
+        $this->log('INFO: trigger POST: '.$post_value);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_value);
 
@@ -491,7 +490,7 @@ class Pusher
 
         $ch = $this->create_curl($this->ddn_domain(), $s_url, 'POST', $query_params);
 
-        $this->log('trigger POST: '.$post_value);
+        $this->log('INFO: trigger POST: '.$post_value);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_value);
 
@@ -639,7 +638,7 @@ class Pusher
         $query_params = array();
 
         if (is_string($interests)) {
-            $this->log('->notify received string interests "'.$interests.'". Converting to array.');
+            $this->log('INFO: ->notify received string interests "'.$interests.'". Converting to array.');
             $interests = array($interests);
         }
 
@@ -656,7 +655,7 @@ class Pusher
         $notification_path = '/server_api/v1'.$this->settings['base_path'].'/notifications';
         $ch = $this->create_curl($this->notification_domain(), $notification_path, 'POST', $query_params);
 
-        $this->log('trigger POST (Native notifications): '.$post_value);
+        $this->log('INFO: trigger POST (Native notifications): '.$post_value);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_value);
 

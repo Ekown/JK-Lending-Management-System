@@ -1,15 +1,12 @@
 <?php
 
-use App\Events\Remittance;
-use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Support\Optional;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Debug\Dumper;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\HigherOrderTapProxy;
-use Illuminate\Support\Optional;
-use Illuminate\Support\Str;
 
 if (! function_exists('append_config')) {
     /**
@@ -91,7 +88,7 @@ if (! function_exists('array_dot')) {
 
 if (! function_exists('array_except')) {
     /**
-     * Get all of the given array except for a specified array of items.
+     * Get all of the given array except for a specified array of keys.
      *
      * @param  array  $array
      * @param  array|string  $keys
@@ -285,10 +282,10 @@ if (! function_exists('array_sort')) {
      * Sort the array by the given callback or attribute name.
      *
      * @param  array  $array
-     * @param  callable|string  $callback
+     * @param  callable|string|null  $callback
      * @return array
      */
-    function array_sort($array, $callback)
+    function array_sort($array, $callback = null)
     {
         return Arr::sort($array, $callback);
     }
@@ -373,22 +370,6 @@ if (! function_exists('camel_case')) {
     function camel_case($value)
     {
         return Str::camel($value);
-    }
-}
-
-if (! function_exists('check_active_duplicate')) {
-    /**
-     * Check if the current loan id is already in the active remittance table.
-     *
-     * @param  string  $id
-     * @return bool
-     */
-    function check_active_duplicate($id)
-    {
-        return DB::table('active_remittable_loans')
-                   ->select('id')
-                   ->where('loan_id', $id)
-                   ->exists();
     }
 }
 
@@ -742,19 +723,6 @@ if (! function_exists('optional')) {
     }
 }
 
-if (! function_exists('peso')) {
-    /**
-     * Display the Peso Sign
-     *
-     * @param  null
-     * @return char
-     */
-    function peso()
-    {
-        return ('&#8369;');
-    }
-}
-
 if (! function_exists('preg_replace_array')) {
     /**
      * Replace a given pattern with each value in the array in sequentially.
@@ -774,101 +742,6 @@ if (! function_exists('preg_replace_array')) {
     }
 }
 
-if (! function_exists('ready_active_table')) {
-    /**
-     * Ready the active remittance table for insertion and update.
-     *
-     * @param  null
-     * @return null
-     */
-    function ready_active_table()
-    {
-        // Before inserting rows into the active table, delete all remitted loans from the table.
-        // $clean_active_table = \DB::table('active_remittable_loans')
-        //                         ->where('active_remittable_loans.isRemitted', 1)
-        //                         ->delete();
-
-        // Check if the active table is empty or not
-        $check_if_rows_exists = \DB::table('active_remittable_loans')
-                                  ->select('id')
-                                  ->exists();
-
-        // If the active table is empty, truncate it to reset the id increment
-        if(! $check_if_rows_exists)
-        {
-            $reset_active_table = \DB::table('active_remittable_loans')
-                                    ->truncate();
-        }
-        //---------------------------------------------------------//
-        // This is where the operations for late loans are located //
-        //---------------------------------------------------------//
-        else
-        {
-            // Get all the remaining loans in the active table
-            $get_remaining_loans = \DB::table('active_remittable_loans')
-                                    ->select('loan_id')
-                                    ->get();
-
-            // Update each loan's status to late and add a zero remittance for yesterday
-            foreach ($get_remaining_loans as $loan) 
-            {
-                // Update loan status to late
-                $update_loan_status = \DB::table('loans')
-                                       ->where('id', $loan->loan_id)
-                                       ->update(['loan_status_id' => 3]);
-
-                // Add zero remittances for each loan
-                $add_zero_remittance = \DB::table('loan_remittances')
-                                        ->insert([
-                                            [
-                                                'loan_id' => $loan->loan_id,
-                                                'date' => Carbon::yesterday('Asia/Manila'),
-                                                'amount' => 0.00
-                                            ]
-                                        ]);
-
-                // Check if there are already late remittances for the loan 
-                $check_late_amount = \DB::table('late_remittance_amount')
-                                     ->select('amount')
-                                     ->where('loan_id', $loan->loan_id)
-                                     ->first();
-
-                // Get the loan's deduction amount
-                $get_loan_deduction = \DB::table('loans')
-                                     ->select('deduction')
-                                     ->where('id', $loan->loan_id)
-                                     ->first();
-
-                // If there are no late remittances yet
-                if($check_late_amount == null)
-                {                 
-                                                
-                    // Add a new late remittance for the loan
-                    $add_late_remittance = \DB::table('late_remittance_amount')
-                                            ->insert([
-                                                [
-                                                    'loan_id' => $loan->loan_id,
-                                                    'amount' => $get_loan_deduction->deduction
-                                                ]
-                                            ]);
-                }
-                else
-                {   
-                    // Get the current late remittance amount for the loan
-                    $current_late_remittance_amount = \DB::table('late_remittance_amount')
-                                                        ->select('amount')
-                                                        ->where('loan_id', $loan->loan_id)
-                                                        ->first();
-
-                    // Update the current late remittance amount by adding the loan's deduction
-                    $update_late_remittance = \DB::table('late_remittance_amount')
-                                              ->where('loan_id', $loan->loan_id)
-                                              ->update(
-                                                [
-                                                    'amount' => 
-                                                        ($current_late_remittance_amount->amount + 
-                                                         $get_loan_deduction->deduction)
-                                                ]
                                               );
                 }
                 
@@ -888,84 +761,11 @@ if (! function_exists('remittance_date_id')) {
      */
     function remittance_date_id() 
     {
-        $arr = [];
-
-        $date = Carbon::today('Asia/Manila')->format('d');
-        // $date = "1";
-
-        $remittanceDates = DB::table('remittance_dates')->select('*')->get();
-
-        
-        // if($date == "2" || $date == "17")
-        // {
-        //     $arr[] = 1;
-        // }
-        // elseif($date == "3" || $date == "18")
-        // {
-        //     $arr[] = 2;
-        // }
-        // elseif($date == "5" || $date == "20")
-        // {
-        //     $arr[] = 3;
-        // }
-        // elseif($date == "6" || $date == "21")
-        // {
-        //     $arr[] = 4;
-        // }
-        // elseif($date == "7" || $date == "22")
-        // {
-        //     $arr[] = 5;
-        // }
-        // elseif($date == "10" || $date == "25")
-        // {
-        //     $arr[] = 6;
-        // }
-        // elseif($date == "11" || $date == "26")
-        // {
-        //     $arr[] = 7;
-        // }
-        // elseif($date == "12" || $date == "27")
-        // {
-        //     $arr[] = 8;
         // }
         // elseif($date == "15" || $date == "30")
         // {
         //     $arr[] = 9;
         // }
-
-        // If the current date is any of the Twice-a-Month (TAC) Remittance Dates
-        for($i = 0; $i < count($remittanceDates); $i++)
-        {
-            $temp = explode('/', (string)$remittanceDates[$i]->remittance_date);
-
-            if(isset($temp[1]))
-            {
-                if($date == $temp[0] || $date == $temp[1])
-                {
-                    $arr[] = (string)$remittanceDates[$i]->id;
-                }
-            }   
-        }
-
-        // If the current day is a Friday
-        if(Carbon::today('Asia/Manila')->dayOfWeek == 5)
-        {
-            $arr[] = 10;
-        }
-        // Or if its a Saturday
-        elseif(Carbon::today('Asia/Manila')->dayOfWeek == 6)
-        {
-            $arr[] = 11;
-        }
-
-        return $arr;
-
-        // $temp = explode('/', (string)$remittanceDates[0]->remittance_date);
-
-
-    }
-}
-
 if (! function_exists('retry')) {
     /**
      * Retry an operation a given number of times.
@@ -997,19 +797,6 @@ if (! function_exists('retry')) {
 
             goto beginning;
         }
-    }
-}
-
-if (! function_exists('set_active')) {
-    /**
-     * Set the active states for Navigation Menus
-     *
-     * @param  string  $uri
-     * @return string
-     */
-    function set_active($uri) 
-    {
-        return (Request::is($uri) ? 'active' : '');
     }
 }
 
@@ -1391,13 +1178,14 @@ if (! function_exists('windows_os')) {
 
 if (! function_exists('with')) {
     /**
-     * Return the given object. Useful for chaining.
+     * Return the given value, optionally passed through the given callback.
      *
-     * @param  mixed  $object
+     * @param  mixed  $value
+     * @param  callable|null  $callback
      * @return mixed
      */
-    function with($object)
+    function with($value, callable $callback = null)
     {
-        return $object;
+        return is_null($callback) ? $value : $callback($value);
     }
 }

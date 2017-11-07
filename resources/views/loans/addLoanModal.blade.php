@@ -22,15 +22,15 @@
         <!-- Tab Contents -->
         <div class="tab-content" id="addLoanFormTabContent">
             <div class="tab-pane fade show active" id="new" role="tabpanel">
-                <form id="addLoanRecordForm1" style="padding-top: 1em;">
+                <form id="addLoanRecordForm1" style="padding-top: 1em;" novalidate>
                     {{ csrf_field() }}
                   <div class="form-group">
                     <label for="addBorrowerCompany1" class="form-control-label">Borrower Company:</label>
-                    <select class="form-control" id="addBorrowerCompany1" name="addBorrowerCompany1" required>
-                      <option value="1">-No Company (Default)-</option>
+                    <select class="form-control" id="addBorrowerCompany1" name="addBorrowerCompany1">
+                      <option value="7">-No Company (Default)-</option>
         
                       @foreach ($companies as $company)
-                        @if ($company->id != 1)
+                        @if ($company->id != 7)
                           <option value="{{ $company->id }}">{{ $company->name }}</option>
                         @endif
                       @endforeach
@@ -39,20 +39,29 @@
                   </div>
                   <div class="form-group">
                     <label for="addBorrowerName1" class="form-control-label">Borrower Name:</label>
-                    <input type="text" class="form-control" id="addBorrowerName1" name="addBorrowerName1" required>
+                    <input type="text" class="form-control" id="addBorrowerName1" name="addBorrowerName1">
+                    <div class="invalid-feedback" id="name-error-msg">
+                      Please enter a valid borrower name (no numbers and blank name)
+                    </div>
                   </div>
                   <div class="row">
                       <div class="form-group col">
                         <label for="addBorrowerDate1" class="form-control-label">Date of Loan:</label>
-                        <input name="addBorrowerDate1" id="addBorrowerDate1" class="form-control    datepicker" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" data-date-format= "yyyy-mm-dd" required>
+                        <input name="addBorrowerDate1" id="addBorrowerDate1" class="form-control    datepicker" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" data-date-format= "yyyy-mm-dd">
                       </div>
                       <div class="form-group col">
                         <label for="addLoanAmount1" class="form-control-label">Loan Amount:</label>
-                        <input type="number" name="addLoanAmount1" class="form-control" required>
+                        <input type="number" name="addLoanAmount1" id="addLoanAmount1" class="form-control" required>
+                        <div class="invalid-feedback">
+                          Please enter a valid loan amount (no negative and big numbers)
+                        </div>
                       </div>
                       <div class="form-group col">
                          <label for="addBorrowerPercentage1" class="form-control-label">Percentage:</label>
                          <input type="number" class="form-control" id="addBorrowerPercentage1" name="       addBorrowerPercentage1" required>
+                         <div class="invalid-feedback">
+                          Please enter a valid percentage (1-100 only)
+                        </div>
                        </div>
                     </div>
                   <div class="row">
@@ -66,9 +75,11 @@
                        </div>
                        <div class="form-group col">
                         <label for="addBorrowerTerm1" class="form-control-label">Term: 
-                       </label>
-                               
-                         <input type="number" class="form-control" id="addBorrowerTerm1" name="     addBorrowerTerm1" required>
+                       </label>       
+                         <input type="number" class="form-control" id="addBorrowerTerm1" name="     addBorrowerTerm1" step="0.5" required>
+                         <div class="invalid-feedback">
+                          Please enter a valid term (no negative and blank)
+                        </div>
                        </div>
                        <div class="form-group col">
                          <label for="addRemittanceDate1" class="form-control-label">Remittance Date:</label>
@@ -109,11 +120,17 @@
                       </div>
                       <div class="form-group col">
                         <label for="addLoanAmount2" class="form-control-label">Loan Amount:</label>
-                        <input type="number" name="addLoanAmount2" class="form-control" required> 
+                        <input type="number" name="addLoanAmount2" id="addLoanAmount2" class="form-control" required>
+                        <div class="invalid-feedback">
+                          Please enter a valid loan amount (no negative and big numbers)
+                        </div> 
                       </div>
                       <div class="form-group col">
                          <label for="addBorrowerPercentage2" class="form-control-label">Percentage:</label>
                          <input type="number" class="form-control" id="addBorrowerPercentage2" name="addBorrowerPercentage2" required>
+                         <div class="invalid-feedback">
+                          Please enter a valid percentage (1-100 only)
+                        </div>
                        </div>
                     </div>
                   <div class="row">
@@ -127,7 +144,10 @@
                        </div>
                       <div class="form-group col">
                          <label for="addBorrowerTerm2" class="form-control-label">Term:</label>
-                         <input type="number" class="form-control" id="addBorrowerTerm2" name="     addBorrowerTerm2" required> 
+                         <input type="number" class="form-control" id="addBorrowerTerm2" name="     addBorrowerTerm2" step="0.5" required> 
+                         <div class="invalid-feedback">
+                          Please enter a valid term (no negative and blank)
+                        </div>
                        </div>
                        <div class="form-group col">
                          <label for="addRemittanceDate2" class="form-control-label">Remittance Date:</label>

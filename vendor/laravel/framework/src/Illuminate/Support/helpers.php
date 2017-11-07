@@ -742,30 +742,6 @@ if (! function_exists('preg_replace_array')) {
     }
 }
 
-                                              );
-                }
-                
-                // Fire the remittance event to change the loan's loan status badge
-                event(new Remittance($loan->loan_id, 0.00, false));
-            }
-        }
-    }
-}
-
-if (! function_exists('remittance_date_id')) {
-    /**
-     * Set the corresponding remittance date id for the current date
-     *
-     * @param  null
-     * @return array
-     */
-    function remittance_date_id() 
-    {
-        // }
-        // elseif($date == "15" || $date == "30")
-        // {
-        //     $arr[] = 9;
-        // }
 if (! function_exists('retry')) {
     /**
      * Retry an operation a given number of times.

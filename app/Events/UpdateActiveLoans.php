@@ -45,11 +45,21 @@ class UpdateActiveLoans implements ShouldBroadcast
             foreach($query as $loan)
             {
                 // $arr_id[] = $loan->id;
-                // Check if the current loan is already in the active table
+                // Check if the current loan is already in the active table (late)
                 if(! check_active_duplicate($loan->id))
                 {
-                    // Insert the new loan into the active table
-                    $insert_to_active = DB::table('active_remittable_loans')
+
+                    // Check if the active loan has an early remittance
+                    $check_if_early = DB::table('early_loan_remittances')
+                                ->where('loan_id', $loan->id)
+                                ->select('loan_id')
+                                ->exists();
+
+                    // If the loan doesn't have any early remittances
+                    if(! $check_if_early)
+                    {
+                        // Insert the new loan into the active table
+                        $insert_to_active = DB::table('active_remittable_loans')
                                       ->insert([
                                         [
                                             'loan_id' => $loan->id,
@@ -57,7 +67,9 @@ class UpdateActiveLoans implements ShouldBroadcast
                                             'date' => Carbon::today('Asia/Manila')->format('Y-m-d')
                                         ]
                                       ]);
+                    }                    
                 }
+
                 // Increment the counter for each inserted record
                 $inserted_loans_ctr++;
             }

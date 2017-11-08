@@ -32,6 +32,80 @@ function check_active_duplicate($id)
 }
 
 /**
+* Gets the due date from a given date
+*
+* @param  int $day
+* @param  array $dates
+* @param  int $type
+* @param  int $term
+* @return Carbon instance
+*/
+function getDueDate($day, $term, $dates = null, $type = 1)
+{
+    $nextRemittance = null;
+
+    // If the term type of the loan is 'by month'
+    if($type == 1)
+    {
+        // Sort the dates in ascending order
+        sort($dates);
+    
+        // Loop through the array of dates to check the remittance date
+        foreach($dates as $date)
+        {
+            if( ( (int)$date - (int)$day ) >= 0 )
+            {
+                $nextRemittance = $date; 
+
+                break;
+            }
+          
+        }
+
+        if($nextRemittance == null)
+            $nextRemittance = $dates[0];
+
+        // Adjust the current date to the first remittance date
+        $remittanceDate = ($day > $nextRemittance) ? 
+        date('Y-m', strtotime('+1 month')).'-'.$nextRemittance : date('Y-m').'-'.$nextRemittance;
+
+        // Add the term to the first remittance date to get the due date
+        $remittanceDate = Carbon::parse($remittanceDate)->addMonths(floor($term));
+
+        // If the term has no decimal in it
+        if(isset( explode(".", $term)[1] ) == false )
+        {
+            $ctr = 0;
+
+            foreach($dates as $date)
+            {
+
+                if( $remittanceDate->format('d') != $date )    
+                {
+                    $remittanceDate->day = $date;
+
+                    if($ctr != 0)
+                        $remittanceDate->month = $remittanceDate->month - 1;
+
+                    break;
+                }
+
+                $ctr++;
+              
+            }
+        }
+
+        return $remittanceDate;
+    }
+
+    // $remittanceDate = (date('d') > $nextRemittance) ? 
+    //     date('Y-m', strtotime('+1 month')).'-'.$nextRemittance : date('Y-m').'-'.$nextRemittance;
+
+    // return Carbon::parse($remittanceDate)->addMonths()->addDays() ; 
+
+};
+
+/**
 * Display the Peso Sign
 *
 * @param  null

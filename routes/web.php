@@ -115,8 +115,11 @@ Route::post('get/borrowers_by_company', 'BorrowerController@getBorrowersByCompan
 // AJAX request for getting loan remittances by loan
 Route::post('loan/record/{loan}/remittances', 'DatatableController@showLoanRemittances');
 
-// AJAX request for getting loan remittances by loan
+// AJAX request for getting sum of remittances by loan
 Route::post('loan/record/{loan}/remittances/sum', 'LoanController@readTotalRemittance');
+
+// AJAX request for getting total late loan remittances by loan
+Route::post('loan/record/{loan}/remittances/late', 'LoanController@readLateTotalRemittance');
 
 // AJAX request for getting the borrower's number of loans
 Route::post('borrower/{borrower}/profile/number/loans', 'BorrowerController@readLoans');

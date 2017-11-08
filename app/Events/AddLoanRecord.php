@@ -24,6 +24,20 @@ class AddLoanRecord implements ShouldBroadcast
     public function __construct($id)
     {
         $this->borrowerId = $id;
+
+        $loan = (new LoanController)->getLoanDetails($id)->first();
+
+        $remittanceDateArray = (new RemittanceController)->getDates();
+
+        foreach ($remittanceDateArray as $date) 
+        {
+            if($loan->remittance_date_id == $date->id) 
+            {
+                $finalRemittanceDateArray = explode('/', $date->remittance_date);
+            }
+        }
+
+        $dueDate = getDueDate(Carbon::now()->day, $loan->term, $finalRemittanceDateArray, $loan->term_type_id);
     }
 
     /**

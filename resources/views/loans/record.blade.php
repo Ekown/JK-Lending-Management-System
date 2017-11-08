@@ -44,8 +44,8 @@
       </header>
 
       <div class="row">
-        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-          <div class="card">
+        <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
+          <div class="card" style="font-size: smaller;">
             <div class="card-body">
               <ul class="list-group">
                 <li class="list-group-item border-0"><strong>Loan ID:</strong> {{ $details->first()->id }}</li>
@@ -60,8 +60,10 @@
                     {{ "give/s" }}
                   @endif
                 </li>
+                <li class="list-group-item border-0"><strong>Due Date:</strong> {{ $details->first()->due_date }} ({{ \Carbon\Carbon::parse($details->first()->due_date)->diffForHumans() }})</li> 
                 <li class="list-group-item border-0">
-                  <strong>Remittance Date:</strong> {{ $details->first()->remittance_date }}
+                  <strong>Remittance Date:</strong>
+                   <span class="badge badge-primary">{{ $details->first()->remittance_date }}</span> 
                 </li>
                 <li class="list-group-item border-0"><hr></li>
                 <li class="list-group-item border-0">
@@ -69,6 +71,7 @@
                 <span class="badge" id="loan_status">{{ $details->first()->loan_status }}</span>
                 </li>
                 <li class="list-group-item border-0"><strong>Loan Percentage:</strong> {{ $details->first()->percentage }}%</li>
+                <li class="list-group-item border-0"><strong>Deduction Amount:</strong> {{ peso().number_format($details->first()->deduction, 2) }}</li>
                 <li class="list-group-item border-0"><strong>Loan Amount:</strong> {{ peso().number_format($details->first()->amount, 2) }}</li>
                 <li class="list-group-item border-0"><strong>Interested Amount:</strong> {{ peso().number_format($details->first()->interested_amount, 2) }}</li>
               </ul>
@@ -76,7 +79,7 @@
           </div>
         </div>
 
-        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
+        <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 col-xl-7">
           <div class="card">
             <div class="card-body">
               <table class="datatable table table-hover" cellspacing="0" role="grid" style="width:100%">
@@ -97,6 +100,10 @@
                   <tr class="totalSumColumn">
                     <th colspan="2" style="border: none !important"></th>
                     <th id="totalSumColumn" style="border: none !important"></th>
+                  </tr>
+                  <tr class="text-danger">
+                    <th colspan="2" style="border: none !important"></th>
+                    <th style="border: none !important"></th>
                   </tr>
                 </tfoot>
               </table>
@@ -184,7 +191,24 @@
                           'global': false,
                           'url': {{ $details->first()->id }} + "/remittances/sum",
                           'success': function (data) {
+                            if(data != null)
                               tmp = data[0].sum;
+                              // console.log(data[0].sum);
+                          }
+                      });
+                      return tmp;
+                    }();
+
+                    var lateRemittances = function() {
+                      var tmp = 0;
+                      $.ajax({
+                          'async': false,
+                          'type': "POST",
+                          'global': false,
+                          'url': {{ $details->first()->id }} + "/remittances/late",
+                          'success': function (data) {
+                            if(data != 0)
+                              tmp = data[0].amount;
                               // console.log(data[0].sum);
                           }
                       });
@@ -198,6 +222,8 @@
 
                     res = balance - remittances;
 
+
+
                     if(remittances != null)
                     {
                       // Redraw the footer with the updated draw data
@@ -206,6 +232,18 @@
                     }
                       $( api.table().footer() ).find('th').eq(2).html( "Total Remaining Balance: ");
                       $( api.table().footer() ).find('th').eq(3).html("{{ peso() }}" + res.toFixed(2));
+
+                    if(lateRemittances != 0 && lateRemittances != null)
+                    {
+                      console.log(lateRemittances);
+                      $( api.table().footer() ).find('th').eq(4).html( "Total Late Remittance Amount: ");
+                      $( api.table().footer() ).find('th').eq(5).html("{{ peso() }}" + lateRemittances.toFixed(2));
+                    }
+                    else
+                    {
+                      console.log("Hide the late");
+                      $('.text-danger').attr("hidden", "hidden");
+                    }
                     
                   
                 },
@@ -233,12 +271,10 @@
                     url: "{{ route('remitLoan') }}",
                     data: $('#remitLoanForm').serialize() + "&loan_id={{ $details->first()->id }}",
                     success: function(result){
-                        console.log("success");
-                        $('.datatable').DataTable().draw(false);
-                        // window.location = "/loan/" + {{ $details->first()->id }};
+                        console.log( "₱" + $('#remitLoanAmount').val() + " was remitted for Loan #" + {{ $details->first()->id }} + ".");
                     },
                     error: function(){
-                        console.log("error");
+                        console.log("There was an error encountered. Remittance for Loan #" + {{ $details->first()->id }} + " failed.");
                     }
                 });
             });

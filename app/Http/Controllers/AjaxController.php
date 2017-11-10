@@ -133,7 +133,7 @@ class AjaxController extends Controller
             }
         }
 
-        event(new AddLoanRecord((isset($borrower_id)?$borrower_id->first()->id:$request->addBorrowerName2)));      
+        event(new AddLoanRecord((isset($borrower_id)?$borrower_id->first()->id:$request->addBorrowerName2), $createLoanRecord));      
 
         return Response::json($createLoanRecord);  
         

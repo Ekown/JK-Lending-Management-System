@@ -2,13 +2,16 @@
 
 namespace App\Events;
 
+use App\Http\Controllers\LoanController;
+use App\Http\Controllers\RemittanceController;
+use Carbon\Carbon;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class AddLoanRecord implements ShouldBroadcast
 {
@@ -20,12 +23,14 @@ class AddLoanRecord implements ShouldBroadcast
      * @return void
      */
     public $borrowerId;
+    public $loanId;
 
-    public function __construct($id)
+    public function __construct($borrowerId, $loanId)
     {
-        $this->borrowerId = $id;
+        $this->borrowerId = $borrowerId;
+        $this->loanId = $loanId;
 
-        $loan = (new LoanController)->getLoanDetails($id)->first();
+        $loan = (new LoanController)->getLoanDetails($loanId)->first();
 
         $remittanceDateArray = (new RemittanceController)->getDates();
 
@@ -34,10 +39,15 @@ class AddLoanRecord implements ShouldBroadcast
             if($loan->remittance_date_id == $date->id) 
             {
                 $finalRemittanceDateArray = explode('/', $date->remittance_date);
+
+                break;
             }
         }
 
-        $dueDate = getDueDate(Carbon::now()->day, $loan->term, $finalRemittanceDateArray, $loan->term_type_id);
+        $dueDate = getDueDate((int)Carbon::now()->day, (float)$loan->term, $finalRemittanceDateArray, 
+            (int)$loan->term_type_id);
+
+        (new LoanController)->updateDueDate($loan->id, $dueDate->format('Y-m-d'));
     }
 
     /**

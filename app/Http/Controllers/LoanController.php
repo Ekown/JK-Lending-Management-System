@@ -14,7 +14,7 @@ class LoanController extends Controller
         $this->middleware('auth');
     }
 
-    private function getLoanDetails($loan_id)
+    public function getLoanDetails($loan_id)
     {
     	// Gets all the latest ledgers with their associated column data from other tables
     	$query = DB::table('loans')
@@ -76,6 +76,15 @@ class LoanController extends Controller
         $details = $this->getLoanDetails($loan);
 
         return view('loans.record')->with('details', $details)->with('totalRemittances', $totalRemittances)->with('loanBalance', $loanBalance);
+    }
+
+    public function updateDueDate($id, $date)
+    {
+        $updateDueDate = DB::table('loans')
+                        ->where('id', $id)
+                        ->update([
+                            'due_date' => $date
+                        ]);
     }
 
     // Updates the Loan Status in the Loan Table in the database

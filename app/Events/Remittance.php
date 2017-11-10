@@ -3,6 +3,8 @@
 namespace App\Events;
 
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\RemittanceController;
+use Carbon\Carbon;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -25,15 +27,44 @@ class Remittance implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($loanId, $remittanceAmount, $isRemittance = true)
+    public function __construct($loanId, $remittance, $isRemittance = true)
     {
         $this->loanId = $loanId;
-        $this->remittanceAmount = $remittanceAmount;
+        $this->remittanceAmount = $remittance->amount;
         $this->isRemittance = $isRemittance;
 
         // If the event is fired by a remittance
         if($isRemittance == true)
         {
+
+            // Check if the current loan is active or late
+            $checkIfActive = DB::table('active_remittable_loans')
+                                ->where('loan_id', $loanId)  
+                                ->select('loan_id')
+                                ->exists(); 
+
+            // Check if a remittance has been made in the same date
+            $checkIfRemitted = DB::table('early_loan_remittances')  
+                                ->where([
+                                    ['loan_id', $loanId],
+                                    ['date', $remittance->date]
+                                ])  
+                                ->select('id')
+                                ->exists();     
+
+            // If the current loan is not active or late, then this is an early remittance
+            if($checkIfActive == false && $checkIfRemitted == false)
+            {
+                // Add the remittance to the early remittance table
+                $addToEarly = DB::table('early_loan_remittances')
+                            ->insert([
+                                [
+                                    'loan_id' => $loanId,
+                                    'date' => $remittance->date
+                                ]
+                            ]);
+            }
+
             // Gets the current total remittances for the given loan
             $totalRemittances = DB::table('loan_remittances')
                                 ->selectRaw('SUM(loan_remittances.amount) as sum')
@@ -69,7 +100,7 @@ class Remittance implements ShouldBroadcast
                 $this->removeFromActive($loanId);
             }
             // If else, change or retain the loan status to 'Not Fully Paid'
-            else
+            elseif($remittance->amount >= get_deduction($loanId)->deduction)
             {
                 // If there are no late remittance amount for the loan
                 if($totalLateBalance == null)
@@ -103,9 +134,27 @@ class Remittance implements ShouldBroadcast
                         $this->changeStatus(3);
                     }
 
-                }
-                
-            }
+                }   
+            } 
+            // If the early remittance is less than the deduction, the loan status
+            // is changed to 'Late' and the missing remittance is added in the 
+            // late remittances amount
+            elseif($remittance->amount < get_deduction($loanId)->deduction) 
+            {
+                // Change the loan status to 'Late'
+                $this->updateLoanStatus = "Late";
+                $this->changeStatus(3);
+
+                // Add the missing remittance to the late remittance amount in the database
+                // Add a new late remittance for the loan
+                $add_late_remittance = DB::table('late_remittance_amount')
+                                        ->insert([
+                                            [
+                                                'loan_id' => $loanId,
+                                                'amount' => (float)get_deduction($loanId)->deduction - (float)$remittance->amount
+                                            ]
+                                        ]);
+            } 
         }
         else
         {

@@ -31,6 +31,24 @@ function check_active_duplicate($id)
                ->exists();
 }
 
+
+
+/**
+* Gets the deduction of the current loan.
+*
+* @param  string  $id
+* @return float
+*/
+function get_deduction($id)
+{
+    return DB::table('loans')
+           ->select('deduction')
+           ->where('id', $id)
+           ->first();
+}
+
+
+
 /**
 * Gets the due date from a given date
 *
@@ -176,10 +194,7 @@ function ready_active_table()
                                  ->first();
 
             // Get the loan's deduction amount
-            $get_loan_deduction = DB::table('loans')
-                                 ->select('deduction')
-                                 ->where('id', $loan->loan_id)
-                                 ->first();
+            $get_loan_deduction = get_deduction($loan->loan_id);
 
             // If there are no late remittances yet
             if($check_late_amount == null)

@@ -19,16 +19,21 @@ class RemittanceController extends Controller
     public function createLoan(Request $request)
     {
         // Creates a loan remittance record in the database
-    	$query = DB::table('loan_remittances')->insert([
+    	$query = DB::table('loan_remittances')->insertGetId(
     		[
     			'loan_id' => $request->loan_id,
     			'date' => $request->remitLoanDate,
     			'amount' => $request->remitLoanAmount
     		]
-    	]);
+    	);
+
+        $remittance = DB::table('loan_remittances')
+                    ->where('id', $query)
+                    ->select('*')
+                    ->first();
 
         // Fires the Remittance Event
-        event(new Remittance($request->loan_id, $request->remitLoanAmount));
+        event(new Remittance($request->loan_id, $remittance));
 
     	return Response::json($query);	
     }

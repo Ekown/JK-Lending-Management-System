@@ -12,6 +12,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class AddLoanRecord implements ShouldBroadcast
 {
@@ -24,11 +25,22 @@ class AddLoanRecord implements ShouldBroadcast
      */
     public $borrowerId;
     public $loanId;
+    public $borrower;
 
     public function __construct($borrowerId, $loanId)
     {
         $this->borrowerId = $borrowerId;
         $this->loanId = $loanId;
+
+        // Get the borrower for the loan
+        $getBorrowerName = DB::table('loans')
+                        ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
+                        ->where('loans.id', $this->loanId)
+                        ->select('borrowers.name')
+                        ->first();
+
+        // Store the borrower's name
+        $this->borrower = $getBorrowerName->name;
 
         $loan = (new LoanController)->getLoanDetails($loanId)->first();
 

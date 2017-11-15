@@ -3,6 +3,8 @@
 
 @section ('content')
 
+    <div id="flash-message" class="clearfix"></div>
+
     <section class="charts">
 
         <div class="container-fluid">
@@ -17,24 +19,17 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                    <form id="addBorrowerForm" style="padding-top: 1em;">
+                    <form id="addBorrowerForm" style="padding-top: 1em;" novalidate>
                                 {{ csrf_field() }}
                             <div class="form-group">
                                 <label for="addBorrowerFormCompany" class="form-control-label">Borrower Company:</label>
-                                <select class="form-control" id="addBorrowerFormCompany" name="addBorrowerCompany1">
-                                  <option value="1">-No Company (Default)-</option>
-                    
-                                  @foreach ($companies as $company)
-                                    @if ($company->id != 1)
-                                      <option value="{{ $company->id }}">{{ $company->name }}</option>
-                                    @endif
-                                  @endforeach
-                    
+                                <select class="form-control" id="addBorrowerFormCompany" name="addBorrowerFormCompany">                 
                                 </select>
                               </div>
                               <div class="form-group">
                                 <label for="addBorrowerFormName" class="form-control-label">Borrower Name:</label>
-                                <input type="text" class="form-control" id="addBorrowerFormName" name="    addBorrowerName1">
+                                <input type="text" class="form-control" id="addBorrowerFormName" name="addBorrowerFormName">
+                                <div class="invalid-feedback" id="name-error-msg"></div>
                               </div>
                         </form>
                   </div>
@@ -114,16 +109,45 @@
             });
 
             // Instantiate the selectize plugin for the company dropdown
-            $('#addBorrowerFormCompany').selectize();
+            var $companyDropdown = $('#addBorrowerFormCompany').selectize();
+            var companyDropdownSelectize = $companyDropdown[0].selectize;
+            var defaultCompanies = [];  
+
+            // Ajax call for the company options for the company dropdown
+            function getCompaniesForDropdown(){
+               $.ajax({
+                  method: "POST",
+                  url: "{{ route('getCompaniesForDropdown') }}",
+                  dataType: 'json',
+                  success: function (data){
+                      defaultCompanies = data;
+                      companyDropdownSelectize.addOption({value: 7, text: "-No Company (Default)-"});
+                      defaultCompanies.forEach(function(entry)
+                      {
+                          companyDropdownSelectize.addOption({value: entry.id, text: entry.name});
+                      });
+                      companyDropdownSelectize.refreshOptions();
+                      companyDropdownSelectize.addItem(0);
+                      companyDropdownSelectize.setValue(7);
+                  }
+               }); 
+            }  
+
+            companyDropdownSelectize.clearOptions();
+            getCompaniesForDropdown();
 
             $('#submitAddBorrowerForm').click(function (){
 
-                // Hide the modal after submitting
+              if(addBorrowerValidate() == true)
+              {
+                  // Hide the modal after submitting
                 $('#addBorrowerModal').modal('hide');
+
 
                 // AJAX request for submiting the loan form
                 $.ajax({
                   method: "POST",
+                  async: true,
                   url: "{{ route('addBorrower') }}",
                     data: $('#addBorrowerForm').serialize(),
                     success: function(){
@@ -134,7 +158,8 @@
                         console.log("error");
                         $('.datatable').DataTable().draw(false);
                     }
-                });
+                });    
+              }
             });
 
             // Makes the datatable row clickable
@@ -144,6 +169,41 @@
                     // console.log($(this).data("borrower-id"));
                     window.location = "/borrower/" + $(this).data("borrower-id") + "/profile";
                   }
+            });
+
+            function alert(msg)
+            {
+                $('<div class="alert">' 
+                    + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').appendTo('#flash-message').trigger('showalert');           
+            }
+
+            $(document).on('showalert', '.alert', function(){
+                window.setTimeout($.proxy(function() {
+                    $(this).fadeTo(500, 0).slideUp(500, function(){
+                        $(this).remove(); 
+                    });
+                }, this), 5000);
+            });
+
+            Echo.private(`borrowerMasterListChannel`)
+            .listen('AddBorrower', (e) => {
+                
+                // Update the datatable
+                $('#datatable').DataTable().draw(false);
+                
+                // Flash message when a new borrower is added 
+                alert( e.borrower[0].name + ' was added to ' + e.borrower[0].company + ' in the borrower list');
+            });
+
+            Echo.private(`companyMasterListChannel`)
+            .listen('AddCompany', (e) => {
+                
+                // Update the options of the company dropdown
+                companyDropdownSelectize.clearOptions();
+                getCompaniesForDropdown();
+                
+                // Flash message when a new company is added 
+                alert( '<strong>' + e.company[0].name + '(#' + e.company[0].id + ')</strong> was added to the company list');
             });
 		});
 	</script>

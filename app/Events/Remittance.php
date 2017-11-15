@@ -21,6 +21,7 @@ class Remittance implements ShouldBroadcast
     public $loanId;
     public $remittanceAmount;
     public $updateLoanStatus;
+    public $remittanceBorrower;
 
     /**
      * Create a new event instance.
@@ -107,6 +108,7 @@ class Remittance implements ShouldBroadcast
                 {
                     // Update the loan status to 'Not Fully Paid'
                     $this->notFullyPaid($loanId);
+                    $this->removeFromActive($loanId);
                 }
                 // Else, if there are late remittance amount for the loan
                 else
@@ -117,9 +119,13 @@ class Remittance implements ShouldBroadcast
                         // Update the loan status to 'Not Fully Paid'
                         $this->notFullyPaid($loanId);
 
+                        // Remove this loan record from the Active Table
+                        $this->removeFromActive($loanId);
+
                         // Deletes the loan's late remittance record from the database
                         $this->deleteLateBalance($loanId);
                     }
+                    // Else if the remittance isn't sufficient for the late balance, deduct it from   // the late balance
                     else
                     {
                         // Deduct the remittance to the total cumulative late remittance amount
@@ -179,8 +185,6 @@ class Remittance implements ShouldBroadcast
         // Update the loan status to 'Not Fully Paid'
         $this->updateLoanStatus = "Not Fully Paid";
         $this->changeStatus(1);
-
-        $this->removeFromActive($id);
     }
 
     public function removeFromActive($id)
@@ -207,8 +211,11 @@ class Remittance implements ShouldBroadcast
         $getBorrowerId = DB::table('loans')
                         ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
                         ->where('loans.id', $this->loanId)
-                        ->select('borrowers.id')
+                        ->select('borrowers.*')
                         ->first();
+
+        // Store the borrower's name
+        $this->remittanceBorrower = $getBorrowerId->name;
 
 
         // If the loan is paid or not fully paid, broadcast to the Loan, Loan Master List, and 

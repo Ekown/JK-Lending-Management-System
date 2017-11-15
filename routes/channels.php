@@ -30,3 +30,15 @@ Broadcast::channel('updateActiveLoans', function () {
 Broadcast::channel('borrowerChannel.{id}', function () {
     return true;
 });
+
+Broadcast::channel('borrowerMasterListChannel', function () {
+    return true;
+});
+
+Broadcast::channel('companyChannel.{companyId}', function () {
+    return true;
+});
+
+Broadcast::channel('companyMasterListChannel', function () {
+    return true;
+});

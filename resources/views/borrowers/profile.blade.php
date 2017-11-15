@@ -2,6 +2,8 @@
 
 @section ('content')
 
+    <div id="flash-message" class="clearfix"></div>
+
 	<section class="charts">
 		<div class="container-fluid">
 			<header>
@@ -13,11 +15,16 @@
 					<div class="card">
 						<div class="card-body">
 							<ul class="list-group list-group-flush">
-								<li class="clearfix list-group-item border-0"><strong>Name:</strong> {{ $profile->name }}</li>
-								<li class="clearfix list-group-item border-0"><strong>Company:</strong> {{ $profile->company }}</li>
-								<li class="clearfix list-group-item border-0"><strong>Address:</strong> {{ $profile->address }}</li>
-								<li class="clearfix list-group-item border-0"><strong>Contact Details:</strong> {{ $profile->contact_details }}</li>
+								<li class="clearfix list-group-item border-0"><strong>ID:</strong> <span id="id">{{ $profile->id }}</span></li>
+								<li class="clearfix list-group-item border-0"><strong>Name:</strong> <span id="name"></span></li>
+								<li class="clearfix list-group-item border-0"><strong>Company:</strong> <span id="company"></span> </li>
+								<li class="clearfix list-group-item border-0"><strong>Address:</strong> <span id="address"></span> </li>
+								<li class="clearfix list-group-item border-0"><strong>Contact Details:</strong> <span id="contact"></span> </li>
 							</ul>
+@include ('borrowers.editProfileModal')
+							<div class="text-center">
+								<button data-toggle="modal" data-target="#editProfileModal" href="#" class="btn btn-primary" >Edit Profile</button >
+							</div>
 						</div>
 					</div>
 				</div>
@@ -105,15 +112,80 @@
 				});
 			}
 
+			function getProfileDetails()
+			{
+				$.ajax({
+					'async': true,
+					'type': "POST",
+					'url': "{{ route('borrowerProfile', ['id' => $profile->id ]) }}",
+					'success': function(data) {
+					// Dynamic contect generation for the borrower profile
+						$('#name').html(data[0].name);
+						$('#company').html(data[0].company);
+						$('#address').html(data[0].address);
+						$('#contact').html(data[0].contact_details);
+
+					// Dynamic contect generation for the edit profile modal
+						$('#editBorrowerName').attr('value', data[0].name);
+						$('#editBorrowerCompany').attr('value', data[0].company);
+						$('#editBorrowerAddress').attr('value', data[0].address);
+						$('#editBorrowerContact').attr('value', data[0].contact_details);
+
+						console.log('Profile page updated.')
+					},
+					'error': function(res) {
+						console.log('An error occurred.');
+					}
+				});
+			}
+
+			function alert(msg)
+			{
+				$('<div class="alert">' 
+					+ msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').appendTo('#flash-message').trigger('showalert');			 
+			}
+
+			$(document).on('showalert', '.alert', function(){
+			        window.setTimeout($.proxy(function() {
+			            $(this).fadeTo(500, 0).slideUp(500, function(){
+			                $(this).remove(); 
+			            });
+			        }, this), 5000);
+			    }); 
+		
+			getProfileDetails();
 			changeNumbers();
+
+			$('#editButton').on('click', function() {
+				$('#editProfileModal').modal('hide');
+
+				$.ajax({
+					'async': true,
+					'type': "POST",
+					'url': "{{ route('updateBorrowerProfile', ['id' => $profile->id ]) }}",
+					'data': $('#editBorrowerProfileForm').serialize(),
+					'success': function(data) {
+						//console.log("Borrower #" + {{ $profile->id }} + "'s profile has been updated.");
+					},
+					'error': function(data) {
+						console.log('There was an error encountered.');
+					}
+				});
+			});
 
 		    Echo.private(`borrowerChannel.{{ $profile->id }}`)
 		      	.listen('Remittance', (e) => {
 		          	// console.log(e);
 		        	changeNumbers();
+		        	alert("A loan remittance for <strong>" + $('#name').html() + "</strong> was made.")
 		    })
 		    	.listen('AddLoanRecord', (e) => {
 		    		changeNumbers();
+		    		alert("A new loan (" + e.loanId + ") for <strong>" + $('#name').html() + "</strong> was made.");
+		    })
+		    	.listen('EditProfile', (e) => {
+		    		getProfileDetails();
+		    		alert("The profile of <strong>" + $('#name').html() + "</strong> was updated."); 
 		    });  
 		});
 	</script>

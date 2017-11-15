@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AddCompany;
 use App\Http\Controllers\RemittanceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,11 +18,15 @@ class CompanyController extends Controller
     // Creates a Company record and inserts it into the database
     public function create(Request $request)
     {
-        return Response::json($query = DB::table('companies')->insert([
+        $query = DB::table('companies')->insertGetId(
             [
                 'name' => $request->addCompanyFormName
             ]
-        ]));
+        );
+
+        event(new AddCompany($query));
+
+        return Response::json($query);
     }
 
     public function getCompanies()
@@ -41,7 +46,9 @@ class CompanyController extends Controller
         {
             $remittanceDates = (new RemittanceController)->getDates();
 
-            return view('companies.companies')->with('company', $company)->with('dates', $remittanceDates)->with('remitDate', $date);
+            $companyId = DB::table('companies')->where('name', $company)->select('id')->get();
+
+            return view('companies.companies')->with('company', $company)->with('dates', $remittanceDates)->with('remitDate', $date)->with('companyId', $companyId);
         }
     }
 

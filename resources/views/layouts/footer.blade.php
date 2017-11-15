@@ -6,14 +6,14 @@
               <p>JK Lending &copy; {{ \Carbon\Carbon::now()->format('Y') }}</p>
             </div>
             <div class="col-sm-3 col-md-3">
-              <p>Design by <a href="https://bootstrapious.com" class="external">Bootstrapious</a></p>
+              <p>Design by <a target="_new" href="https://bootstrapious.com" class="external">Bootstrapious</a></p>
               <!-- Please do not remove the backlink to us unless you support further theme's development at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
             </div>
             <div class="col-sm-4 col-md-3">
-              <p>Powered by <a href="https://laravel.com/" class="external">Laravel 5.5</a></p>
+              <p>Powered by <a target="_new" href="https://laravel.com/" class="external">Laravel 5.5</a></p>
             </div>
             <div class="col-sm-3 col-md-3">
-              <p>Developed by <a href="https://www.facebook.com/ekoowwnditioner" class="external">Eron Tancioco</a></p>
+              <p>Developed by <a target="_new" href="https://www.facebook.com/ekoowwnditioner" class="external">Eron Tancioco</a></p>
             </div>
           </div>
         </div>

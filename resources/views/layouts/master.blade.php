@@ -72,6 +72,8 @@
         <div id="loader"></div>
     </div>
 
+    
+
     @if(Auth::check())
         @include ('layouts.navbar')
 
@@ -85,7 +87,7 @@
                   <div class="navbar-header"><a id="toggle-btn" href="#" class="menu-btn"><i class="icon-bars"> </i></a><a href="{{ route('home') }}" class="navbar-brand">
                       <div class="brand-text d-none d-md-inline-block"><span><strong>J</strong><strong class="text-primary">K&nbsp;</strong></span>Lending Management System</div></a></div>
                   <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
-                    <li class="nav-item dropdown"> <a id="notifications" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link"><i class="fa fa-bell"></i><span class="badge badge-warning">12</span></a>
+                    {{-- <li class="nav-item dropdown"> <a id="notifications" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link"><i class="fa fa-bell"></i><span class="badge badge-warning">12</span></a>
                       <ul aria-labelledby="notifications" class="dropdown-menu">
                         <li><a rel="nofollow" href="#" class="dropdown-item"> 
                             <div class="notification d-flex justify-content-between">
@@ -129,7 +131,7 @@
                             </div></a></li>
                         <li><a rel="nofollow" href="#" class="dropdown-item all-notifications text-center"> <strong> <i class="fa fa-envelope"></i>Read all messages    </strong></a></li>
                       </ul>
-                    </li>
+                    </li> --}}
                     <form method="post" action="{{ route('logout') }}">
                     {{ csrf_field() }}
                     <li class="nav-item">

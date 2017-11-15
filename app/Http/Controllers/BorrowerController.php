@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AddBorrower;
+use App\Events\EditProfile;
 use App\Http\Controllers\CompanyController;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,16 +19,23 @@ class BorrowerController extends Controller
     	$this->middleware('auth');
     }
 
-
     // Create a new Borrower and insert it into the database
     public function create(Request $request)
     {
-        return Response::json(DB::table('borrowers')->insert([
+        // Insert the new borrower record into the database
+        $newBorrower = DB::table('borrowers')->insertGetId(
             [
-                'name' => $request->addBorrowerName1,
-                'company_id' => ($request->addBorrowerCompany1 == "0" ?null: $request->addBorrowerCompany1)
+                'name' => $request->addBorrowerFormName,
+                // 'company_id' => ($request->addBorrowerFormCompany == "0" ?null: $request->addBorrowerFormCompany)
+                'company_id' => $request->addBorrowerFormCompany
             ]
-        ]));
+        );
+
+        // Fire the Add Borrower event
+        event(new AddBorrower($newBorrower));
+
+        // Return the json result
+        return Response::json($newBorrower);
     }
 
     // Get the borrowers for each company
@@ -88,21 +97,26 @@ class BorrowerController extends Controller
                 ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
                 ->where('borrowers.id', $id)
                 ->select('borrowers.*', 'companies.name as company')
-                ->first();
+                ->get();
     }
 
+    // View Borrower's Loan History
     public function loans($id)
     {
         return view('borrowers.loans')->with('borrowerId', $id);
     }
 
+
+    // View borrower's profile page
     public function profile($id)
     {
         $profile = $this->getBorrowerDetails($id);
 
-        return view('borrowers.profile')->with('profile', $profile);
+        return view('borrowers.profile')->with('profile', $profile->first());
     }
 
+
+    // Get the loans and cash advances count of a borrower
     public function readLoans($id)
     {
         $arr_data = [];
@@ -144,6 +158,22 @@ class BorrowerController extends Controller
         $companies = (new CompanyController)->getCompanies();
 
     	return view('borrowers.index', compact('companies'));
+    }
+
+    // Updates the borrower's profile
+    public function updateProfile($id, Request $request)
+    {
+        event(new EditProfile($id));
+
+        return Response::json(
+            DB::table('borrowers')
+                ->where('id', $id)
+                ->update(
+                    ['name' => $request->editBorrowerName],
+                    ['contact_details' => $request->editBorrowerCompany],
+                    ['address' => $request->editBorrowerAddress]
+                )
+        );
     }	
 
 }

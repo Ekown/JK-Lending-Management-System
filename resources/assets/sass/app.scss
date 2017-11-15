@@ -145,3 +145,27 @@ h1 {
 .invalid-feedback {
   font-size: 0.7rem !important;
 }
+
+/* Flash Message CSS */
+
+#flash-message {
+    bottom: 20px;
+    position: fixed;
+    right: 20px;
+    z-index: 10;
+}
+
+#flash-message {
+  .alert {
+    //margin-bottom: 0rem !important;
+    background-color: #5CDB95 !important;
+  }
+}
+
+#flash-message {
+  .alert {
+    button {
+      padding-left: inherit !important;
+    }
+  }
+}

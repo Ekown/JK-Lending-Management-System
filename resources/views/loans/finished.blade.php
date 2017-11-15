@@ -2,6 +2,8 @@
 
 @section('content')
 
+    <div id="flash-message" class="clearfix"></div>
+
     <section class="charts">
         
         <div class="container-fluid">
@@ -114,11 +116,28 @@
             }
         });
 
+        function alert(msg)
+        {
+            $('<div class="alert">' 
+                + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').appendTo('#flash-message').trigger('showalert');           
+        }
+
+        $(document).on('showalert', '.alert', function(){
+                window.setTimeout($.proxy(function() {
+                    $(this).fadeTo(500, 0).slideUp(500, function(){
+                        $(this).remove(); 
+                    });
+                }, this), 5000);
+        });
+
         // Listens for updates from the server and redraws the datatable
         Echo.private(`loanMasterListChannel`)
         .listen('Remittance', (e) => {
             // console.log(e);
             $('.datatable').DataTable().draw(false);
+
+            if(e.updateLoanStatus == "Paid")
+                alert('A remittance was made. Loan #' + e.loanId + ' is now fully paid and moved to the Finished Loans.');
         });  
           
 	});

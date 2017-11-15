@@ -5,6 +5,8 @@
 
 {{--     @include ('addLoanModal') --}}
 
+    <div id="flash-message" class="clearfix"></div>
+
     <section class="charts">
 
         <div class="container-fluid">
@@ -160,6 +162,20 @@
                     window.location = "/loan/record/" + $(this).data("loan-id");
                 }
             }); 
+
+            function alert(msg)
+            {
+                $('<div class="alert">' 
+                    + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').appendTo('#flash-message').trigger('showalert');           
+            }
+
+            $(document).on('showalert', '.alert', function(){
+                window.setTimeout($.proxy(function() {
+                    $(this).fadeTo(500, 0).slideUp(500, function(){
+                        $(this).remove(); 
+                    });
+                }, this), 5000);
+            });
         
             // Listens for updates in the active remittable loans table in the database
             Echo.private(`loanMasterListChannel`)
@@ -167,11 +183,20 @@
                 // console.log(e);
                 changeDateBadge();
                 $('#datatable').DataTable().draw(false);
+                
+                alert('<strong>Active</strong> loans have been updated for today. [{{ \Carbon\Carbon::today()->format('m-d-Y') }}]');
+
             })
             // Listens for significant remittances
             .listen('Remittance', (e) => {
                 // console.log(e);
                 $('#datatable').DataTable().draw(false);
+
+                if(e.updateLoanStatus == "Paid")
+                    alert('A remittance was made. Loan #' + e.loanId + ' is now fully paid.');
+                else if (e.updateLoanStatus == "Not Fully Paid")
+                    alert('A remittance for Loan #' + e.loanId + ' was made.');
+
             });   
 
         });

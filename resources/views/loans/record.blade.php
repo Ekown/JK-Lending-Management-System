@@ -3,6 +3,8 @@
 
 @section ('content')
 
+  <div id="flash-message" class="clearfix"></div>
+
   <div class="modal fade" id="remitModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -279,12 +281,37 @@
                 });
             });
 
+      function alert(msg)
+      {
+          $('<div class="alert">' 
+            + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').appendTo('#flash-message').trigger('showalert');           
+      }
+
+      $(document).on('showalert', '.alert', function(){
+              window.setTimeout($.proxy(function() {
+                  $(this).fadeTo(500, 0).slideUp(500, function(){
+                      $(this).remove(); 
+                  });
+              }, this), 5000);
+          });
+
       Echo.private(`loanChannel.{{ $details->first()->id }}`)
       .listen('Remittance', (e) => {
           // console.log(e);
           $('.datatable').DataTable().draw(false);
-          $('#loan_status').html(e.updateLoanStatus);
+
+          if(e.updateLoanStatus != null)
+            $('#loan_status').html(e.updateLoanStatus);
+          
           updateBadge();
+
+          if(e.updateLoanStatus == "Paid")
+            alert('A remittance was made today. This loan is now fully paid and moved to the Finished Loans.');
+          else if(e.updateLoanStatus == "Not Fully Paid")
+            alert("A remittance was made today. This loan's late balance has been paid.");
+          else
+            alert('A remittance was made today.');
+
       });
 
 		});

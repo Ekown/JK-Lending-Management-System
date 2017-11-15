@@ -2,6 +2,8 @@
 
 @section ('content')
 
+    <div id="flash-message" class="clearfix"></div>
+    
     <section class="charts">
 
         <div class="container-fluid">
@@ -121,6 +123,28 @@
                     // console.log($(this).data("borrower-id"));
                     window.location = "/borrower/" + $(this).data("borrower-id") + "/profile";
                   }
+            });
+
+            function alert(msg)
+            {
+                $('<div class="alert">' 
+                    + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').appendTo('#flash-message').trigger('showalert');           
+            }
+
+            $(document).on('showalert', '.alert', function(){
+                window.setTimeout($.proxy(function() {
+                    $(this).fadeTo(500, 0).slideUp(500, function(){
+                        $(this).remove(); 
+                    });
+                }, this), 5000);
+            });
+
+            Echo.private(`companyChannel.{{ $companyId->first()->id }}`)
+            .listen('AddBorrower', (e) => {
+                
+                $('.datatable').DataTable().draw(false);
+                
+                alert( e.borrower[0].name + ' was added to ' + e.borrower[0].company + ' in the borrower list'); 
             });
 
 		});

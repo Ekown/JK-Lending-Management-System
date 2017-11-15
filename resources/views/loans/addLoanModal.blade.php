@@ -27,14 +27,6 @@
                   <div class="form-group">
                     <label for="addBorrowerCompany1" class="form-control-label">Borrower Company:</label>
                     <select class="form-control" id="addBorrowerCompany1" name="addBorrowerCompany1">
-                      <option value="7">-No Company (Default)-</option>
-        
-                      @foreach ($companies as $company)
-                        @if ($company->id != 7)
-                          <option value="{{ $company->id }}">{{ $company->name }}</option>
-                        @endif
-                      @endforeach
-        
                     </select>
                   </div>
                   <div class="form-group">
@@ -98,14 +90,6 @@
                   <div class="form-group">
                     <label for="addBorrowerCompany2" class="form-control-label">Borrower Company:</label>
                     <select class="form-control" id="addBorrowerCompany2" name="addBorrowerCompany2" required>
-                      <option value="1">-No Company (Default)-</option>
-        
-                      @foreach ($companies as $company)
-                        @if ($company->id != 1)
-                          <option value="{{ $company->id }}">{{ $company->name }}</option>
-                        @endif
-                      @endforeach
-
                     </select>
                   </div>
                   <div class="form-group" style="margin-top: -5px;">

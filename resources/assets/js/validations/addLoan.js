@@ -21,18 +21,18 @@ function addLoanValidate(form)
 				url: "http://jklending.prod:81/add/loan/check/borrower",
 				method: "POST",
 				success: function(data) {
-					console.log("This is the ajax success: " + ifExists);
+					//console.log("This is the ajax success: " + ifExists);
 					temp = data;
 				},
 				error: function(res) {
-					console.log(res);
+					console.log("An error occured");
 				}
 			});
 
 			return temp;
 		}();
 
-		console.log("this is the variable: " + ifExists);
+		//console.log("this is the variable: " + ifExists);
 
 		// If the borrower name is empty, has a number or already existing, 
 		// add an error message to it
@@ -45,7 +45,7 @@ function addLoanValidate(form)
 			// If the borrower already exists
 			if(ifExists == true)
 			{
-				console.log("write the error for existing");
+				//console.log("write the error for existing");
 				$('#name-error-msg').html("Borrower already exists, try the existing borrower tab");
 			}
 

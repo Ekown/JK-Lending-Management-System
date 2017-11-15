@@ -105,6 +105,12 @@ Route::post('add/borrower', 'BorrowerController@create')->name('addBorrower');
 // AJAX request for the Add Company
 Route::post('add/company', 'CompanyController@create')->name('addCompany'); 
 
+// AJAX request for checking if the company is unique
+Route::post('add/company/check/company', 'AjaxController@checkIfUniqueCompany');
+
+// AJAX request for the getting all the companies
+Route::post('get/companies', 'CompanyController@getCompanies')->name('getCompaniesForDropdown');
+
 // AJAX request for the Borrower Master List
 Route::post('get/all_borrowers', 'DatatableController@showMasterBorrowerList')->name('master_borrower_list');
 
@@ -124,8 +130,17 @@ Route::post('loan/record/{loan}/remittances/late', 'LoanController@readLateTotal
 // AJAX request for getting the borrower's number of loans
 Route::post('borrower/{borrower}/profile/number/loans', 'BorrowerController@readLoans');
 
-// AJAX request for getting borrower's loan history
+// AJAX request for getting the borrower's number of loans
+Route::post('borrower/{borrower}/profile/number/loans', 'BorrowerController@readLoans');
+
+// AJAX request for getting the borrower's loans
 Route::post('borrower/{borrower}/profile/list/loans', 'DatatableController@showBorrowerLoansList')->name('borrowerLoanHistory');
+
+// AJAX request for getting borrower's profile details
+Route::post('borrower/{borrower}/profile/details', 'BorrowerController@getBorrowerDetails')->name('borrowerProfile');
+
+// AJAX request for updating the  borrower's profile details
+Route::post('borrower/{borrower}/profile/update/details', 'BorrowerController@updateProfile')->name('updateBorrowerProfile');
 
 // AJAX request for getting the current remittance date
 Route::post('loan/list/active/remittance_date', 'RemittanceController@getCorrespondingDate')->name('getCorrespondingDate');

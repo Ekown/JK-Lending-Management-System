@@ -3,6 +3,8 @@
 
 @section ('content')
 
+    <div id="flash-message" class="clearfix"></div>
+
 @include ('loans.addLoanModal')
 
     <section class="charts">
@@ -156,8 +158,8 @@
                     var form = 'addLoanRecordForm2';                   
                 }
 
-                if(addLoanValidate(form) == true)
-                {
+                // if(addLoanValidate(form) == true)
+                // {
                     // AJAX request for submiting the loan form
                     $.ajax({
                         method: "POST",
@@ -173,16 +175,27 @@
                             console.log("error");
                         }
                     });
-                }
+                // }
                 
             });
 
+            // Instantiate the borrower dropdown
             var $select = $('#addBorrowerName2').selectize();
             var selectize = $select[0].selectize;
-            var defaultBorrowers = [];            
+            var defaultBorrowers = [];    
+
+            // Instantiate the company dropdown for new borrowers
+            var $newCompanyDropdown = $('#addBorrowerCompany1').selectize();
+            var newCompanyDropdownSelectize = $newCompanyDropdown[0].selectize;  
+
+            // Instantiate the company dropdown for old borrowers
+            var $oldCompanyDropdown = $('#addBorrowerCompany2').selectize();
+            var oldCompanyDropdownSelectize = $oldCompanyDropdown[0].selectize; 
+
+            var defaultCompanies = [];      
 
             // Instantiate the Selectize Plugin
-            $('#addBorrowerCompany1, #addBorrowerCompany2, #addLoanTermType1, #addLoanTermType2').selectize({
+            $('#addLoanTermType1, #addLoanTermType2').selectize({
               sortField: 'text'
             });
             
@@ -194,6 +207,8 @@
                   data: { selectedCompany : $('#addBorrowerCompany2').val() },
                   dataType: 'json',
                   success: function (data){
+                      selectize.clearOptions();
+
                       defaultBorrowers = data;
                       selectize.addOption({value: 0, text: "-Please choose a borrower-"});
                       defaultBorrowers.forEach(function(entry)
@@ -204,10 +219,43 @@
                       selectize.addItem(0);
                   }
                }); 
-            }      
+            } 
+
+            function getCompaniesForDropdown()
+            {
+                $.ajax({
+                  method: "POST",
+                  url: "{{ route('getCompaniesForDropdown') }}",
+                  dataType: 'json',
+                  success: function (data){
+                      newCompanyDropdownSelectize.clearOptions();  
+                      oldCompanyDropdownSelectize.clearOptions();
+
+                      defaultCompanies = data;
+
+                      newCompanyDropdownSelectize.addOption({value: 7, text: "-No Company (Default)-"});
+                      oldCompanyDropdownSelectize.addOption({value: 7, text: "-No Company (Default)-"});
+
+                      defaultCompanies.forEach(function(entry)
+                      {
+                          newCompanyDropdownSelectize.addOption({value: entry.id, text: entry.name});
+                          oldCompanyDropdownSelectize.addOption({value: entry.id, text: entry.name});
+                      });
+
+                      newCompanyDropdownSelectize.refreshOptions();
+                      newCompanyDropdownSelectize.addItem(0);
+                      newCompanyDropdownSelectize.setValue(7);
+
+                      oldCompanyDropdownSelectize.refreshOptions();
+                      oldCompanyDropdownSelectize.addItem(0);
+                      oldCompanyDropdownSelectize.setValue(7);
+                  }
+               });
+            }     
 
             // Call the function
-            ajaxCallForBorrowers();     
+            ajaxCallForBorrowers();
+            getCompaniesForDropdown();     
 
             // When the company dropdown is changed, the function is called again
             $('#addBorrowerCompany2').change(function (){
@@ -229,7 +277,19 @@
                 }
             });
 
-            //Add Loan Modal Form Validations
+            function alert(msg)
+            {
+                $('<div class="alert">' 
+                    + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').appendTo('#flash-message').trigger('showalert');           
+            }
+
+            $(document).on('showalert', '.alert', function(){
+                    window.setTimeout($.proxy(function() {
+                        $(this).fadeTo(500, 0).slideUp(500, function(){
+                            $(this).remove(); 
+                        });
+                    }, this), 5000);
+            }); 
             
 
             // Listens for updates from the server and redraws the datatable
@@ -237,9 +297,35 @@
             .listen('Remittance', (e) => {
                 // console.log(e);
                 $('.datatable').DataTable().draw(false);
+                
+                if(e.updateLoanStatus == "Paid")
+                    alert('A remittance was made. Loan #' + e.loanId + ' is now fully paid and moved to the Finished Loans.');
             })
             .listen('AddLoanRecord', (e) => {
+
+                // Update the datatable
                 $('.datatable').DataTable().draw(false);
+                
+                // Flash message when a new loan is made
+                alert("A new loan (#" + e.loanId + ") for <strong>" + e.borrower + "</strong> was made.");
+            })
+            .listen('AddCompany', (e) => {
+                
+                // Update the company dropdowns
+                getCompaniesForDropdown();
+
+                // Flash message when a new company is added
+                alert( '<strong>' + e.company[0].name + '(#' + e.company[0].id + ')</strong> was added to the company list');
+            });
+            
+            Echo.private(`borrowerMasterListChannel`)
+            .listen('AddBorrower', (e) => {
+
+                // Update the borrowers dropdown
+                ajaxCallForBorrowers();
+                
+                // Flash message when a new borrower is added
+                alert( e.borrower[0].name + ' was added to ' + e.borrower[0].company + ' in the borrower list');
             });    
 
         });

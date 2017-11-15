@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AddBorrower;
 use App\Events\AddLoanRecord;
 use App\Events\UpdateActiveLoans;
 use App\Http\Controllers\BorrowerController;
@@ -18,6 +19,7 @@ class AjaxController extends Controller
         $this->middleware('auth');
     }
 
+    // Checks if the borrower is unique in the database
     public function checkIfUniqueBorrower(Request $request)
     {
         return Response::json(DB::table('borrowers')
@@ -29,6 +31,17 @@ class AjaxController extends Controller
                     ->select('borrowers.name as name', 'companies.id as company')
                     ->exists());
         
+    }
+
+    // Checks if the company is unique in the database
+    public function checkIfUniqueCompany(Request $request)
+    {
+        return Response::json(DB::table('companies')
+                    ->where(
+                        'name', $request->name
+                    )
+                    ->select('name')
+                    ->exists());
     }
 
     // Creates a new loan record and appends it into the database
@@ -67,7 +80,7 @@ class AjaxController extends Controller
     		// Create a borrower 
     		$createBorrower = (new BorrowerController)->create($request);
 
-    		// Get the newly created borrower's id
+            // Get the newly created borrower's id
         	$borrower_id = DB::table('borrowers')
         					->where('name', '=', $request->addBorrowerName1)
         					->get();

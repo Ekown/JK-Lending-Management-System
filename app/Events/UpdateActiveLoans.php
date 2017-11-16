@@ -52,7 +52,8 @@ class UpdateActiveLoans implements ShouldBroadcast
                     // Check if the active loan has an early remittance
                     $check_if_early = DB::table('early_loan_remittances')
                                 ->where([
-                                    ['loan_id', $loan->id]
+                                    ['loan_id', $loan->id],
+                                    ['isChecked', 0],                                    
                                 ])
                                 ->select('loan_id')
                                 ->exists();
@@ -69,6 +70,13 @@ class UpdateActiveLoans implements ShouldBroadcast
                                             'date' => Carbon::today('Asia/Manila')->format('Y-m-d')
                                         ]
                                       ]);
+                    }
+                    // If it does, checked it off
+                    else
+                    {
+                        $remove_early = DB::table('early_loan_remittances')
+                                        ->where('loan_id', $loan->id)
+                                        ->update(['isChecked' => 1]);
                     }                    
                 }
 

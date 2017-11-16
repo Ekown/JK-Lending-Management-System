@@ -40,6 +40,7 @@
 {{-- <script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script> --}}
 <script src="{{ asset('plugins/datatables/Buttons-1.4.2/js/dataTables.buttons.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/Buttons-1.4.2/js/buttons.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/Buttons-1.4.2/js/buttons.print.min.js') }}"></script>
 
 <!-- Sum() DataTable Plugin -->
 {{-- <script src="https://cdn.datatables.net/plug-ins/1.10.16/api/sum().js"></script> --}}

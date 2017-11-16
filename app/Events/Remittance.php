@@ -31,7 +31,10 @@ class Remittance implements ShouldBroadcast
     public function __construct($loanId, $remittance, $isRemittance = true)
     {
         $this->loanId = $loanId;
-        $this->remittanceAmount = $remittance->amount;
+
+        if($remittance != 0.00)
+            $this->remittanceAmount = $remittance->amount;
+        
         $this->isRemittance = $isRemittance;
 
         // If the event is fired by a remittance
@@ -114,7 +117,7 @@ class Remittance implements ShouldBroadcast
                 else
                 {
                     // If the remittance is greater than or equal to the total cumulative late remittance
-                    if($remittanceAmount >= $totalLateBalance->amount)
+                    if($remittance->amount >= $totalLateBalance->amount)
                     {
                         // Update the loan status to 'Not Fully Paid'
                         $this->notFullyPaid($loanId);
@@ -132,7 +135,7 @@ class Remittance implements ShouldBroadcast
                         $deductFromLate = DB::table('late_remittance_amount')
                                           ->where('loan_id', $loanId)
                                           ->update([
-                                            'amount' => ($totalLateBalance->amount - $remittanceAmount)
+                                            'amount' => ($totalLateBalance->amount - $remittance->amount)
                                           ]);
 
                         // Update the loan status to 'Late'

@@ -158,8 +158,8 @@
                     var form = 'addLoanRecordForm2';                   
                 }
 
-                // if(addLoanValidate(form) == true)
-                // {
+                if(addLoanValidate(form) == true)
+                {
                     // AJAX request for submiting the loan form
                     $.ajax({
                         method: "POST",
@@ -175,7 +175,7 @@
                             console.log("error");
                         }
                     });
-                // }
+                }
                 
             });
 

@@ -3,6 +3,8 @@
 // Validates the add loan modal form based on the given form
 function addLoanValidate(form)
 {
+console.log($('#addBorrowerName2').val());
+
 	// If the given form is for new borrowers
 	if(form == 'addLoanRecordForm1')
 	{
@@ -106,6 +108,18 @@ function addLoanValidate(form)
 	else
 	{
 		var valid = true;
+		
+		if($('#addBorrowerName2').val() == "0")
+		{
+			$('#addBorrowerName2').next().addClass('is-invalid')
+			// console.log("name: " + $('#addBorrowerName2').val() + " , company:" + $('#addBorrowerCompany2').val())
+
+			valid = false;		
+		}
+		else if($('#addBorrowerName2').val() != "0")
+		{
+			$('#addBorrowerName2').next().removeClass('is-invalid')
+		}
 
 		// If the loan amount field is blank, less than 0 or greater than 10 million, 
 		// add an error message

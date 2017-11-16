@@ -59,6 +59,8 @@
     <script>
         $(document).ready(function() {
 
+            var remittanceDates = [];
+
             // Dynamically create and update the date badge
             function changeDateBadge()
             {
@@ -76,6 +78,8 @@
                             for(var i = 0, len = res.length; i < len; i++) 
                             {
                                html += "&nbsp;<span class='badge badge-primary'>"+res[i].remittance_date+"</span>";
+
+                               remittanceDates.push(res[i].remittance_date);
                             }
                         }
                         else
@@ -101,15 +105,49 @@
                     // data: { remittance_date :  } 
                     async: false             
                 },
-                // dom: 'Bfrtip',
-                // buttons: [
-                //     {
-                //         text: 'Add Loan Record',
-                //         action: function (e, dt, node, config) {
-                //             $('#addLoanModal').modal('show')
-                //         }
-                //     }
-                // ],
+                dom: 'Bfrtip',
+                buttons: [ 
+                    {
+                        extend: 'print',
+                        customize: function ( win ) {
+                            $(win.document.body)
+                                .css( 'font-size', '15pt' );
+                            //     // .prepend(
+                            //     //     '<img src="http://datatables.net/media/images/logo-fade.png" style="position:absolute; top:0; left:0;" />'
+                            //     // );
+                            
+                            // Add the remarks column header
+                            $(win.document.body).find('table thead tr').append("<th>Remarks</th>");
+
+                            // Add rows to the remarks column
+                            $(win.document.body).find('table tbody tr').each(function() { 
+                                $(this).append("<td></td>") 
+                            });
+                                
+                        },
+                        messageTop: function() {
+                            var companyName = '';
+
+                            if($('#companyDropdown').val() == "")
+                                companyName = 'All';
+                            else
+                                companyName = $('#companyDropdown').val();
+
+                            return 'Company: ' + companyName + ' <br> Pay-out: ' + remittanceDates;
+                        },
+                        exportOptions: {
+                            columns: function() {
+                                // if($('#companyDropdown').val() == "")
+                                //     return [ 0, 1, 2, 7, 10 ];
+                                // else
+                                    return [ 0, 1, 7, 10 ];
+                            }()
+                        },
+                        title: function() {
+                            return 'JK Lending';
+                        }                        
+                    }
+                ],
                 "columns": [
                     { "data": "id", "name" : "loans.id" },
                     { "data": "borrower_name", "name" : "borrowers.name" },
@@ -149,11 +187,28 @@
                     
                     return nRow;
                 },
+                "initComplete" : function() {
+                    var select = jQuery("<select id='companyDropdown' style='margin-right: 10px'><option value=''>-No Filter-</option></select>");
+
+                    this.api().column(2).data().unique().sort().each( function ( d, j ) {
+                         select.append( '<option value="'+d+'">'+d+'</option>' )
+                     });
+
+                    $(document).find('div.dt-buttons').prepend(select).on('change', function() {
+                        table.search( $('#companyDropdown').val() ).draw();
+                    });
+
+                },
                 "pageLength" : 15,
                 "bLengthChange": false  
             }); 
-            
-            
+
+            table.buttons().container()
+                .appendTo( '#datatable_wrapper .dt-buttons btn-group' );
+
+            // $(document).find('div.dt-buttons').prepend("<select class='selectize' id='companyDropdown'></select>");
+
+                  
             // Makes the datatable row clickable
             $('#datatable').on('click', 'tbody tr', function() {
                 if(table.data().count())

@@ -96,6 +96,9 @@
                     <label for="addBorrowerName2" class="form-control-label">Borrower Name:</label>
                     <select class="form-control" id="addBorrowerName2" name="addBorrowerName2" required>
                     </select>
+                    <div class="invalid-feedback">
+                        Please choose a borrower
+                    </div>
                   </div>
                   <div class="row">
                       <div class="form-group col">

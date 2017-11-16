@@ -37,6 +37,38 @@
       </div>
   </div>
 
+  <div class="modal fade" id="dueDateModal" role="dialog" arialabeledby="dueDateModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="dueDateModalTitle">Manually Enter the Due Date</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+        </div>
+        <div class="modal-body">
+          <form id="dueDateModalForm" method="POST">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                  <div class="form-group">
+                    <div class="form-control">
+                      <label for="loanDueDate" class="form-control-label">Due Date:</label>
+                      <input name="loanDueDate" id="loanDueDate" class="form-control datepicker" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" data-date-format= "yyyy-mm-dd">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="dueDateModalSubmitForm" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>    
+    </div> 
+  </div>
+
   <section class="charts">
 
     <div class="container-fluid">
@@ -62,7 +94,13 @@
                     {{ "give/s" }}
                   @endif
                 </li>
-                <li class="list-group-item border-0"><strong>Due Date:</strong> {{ $details->first()->due_date }} ({{ \Carbon\Carbon::parse($details->first()->due_date)->diffForHumans() }})</li> 
+                <li class="list-group-item border-0"><strong>Due Date:</strong> {{ $details->first()->due_date }} 
+                  @if($details->first()->due_date != null )
+                    ({{ \Carbon\Carbon::parse($details->first()->due_date)->diffForHumans() }})
+                  @else
+                    <span class="badge badge-warning" id="due_date">No Due Date</span>
+                  @endif
+                </li> 
                 <li class="list-group-item border-0">
                   <strong>Remittance Date:</strong>
                    <span class="badge badge-primary">{{ $details->first()->remittance_date }}</span> 
@@ -294,6 +332,31 @@
                   });
               }, this), 5000);
           });
+
+      // Show the due date modal form when the badge is clicked
+      $('#due_date').on('click', function(){
+        $('#dueDateModal').modal('show');
+        // console.log('Show the modal');
+      });
+
+      // Submit the form when the submit button is clicked
+      $('#dueDateModalSubmitForm').on('click', function(){
+        $('#dueDateModal').modal('hide');
+
+        $.ajax({
+          method: "POST",
+          url: "http://jklending.prod:81/loan/record/{{ $details->first()->id }}/edit/duedate/"
+            + $('#loanDueDate').val(),
+          success: function(data) {
+            //console.log(data);
+            $('#due_date').html($('#loanDueDate').val());
+            $('#due_date').attr('class', '');
+          },
+          error: function(res) {
+            console.log("An error was encountered when updating the due date. Try again.");
+          }
+        });
+      });
 
       Echo.private(`loanChannel.{{ $details->first()->id }}`)
       .listen('Remittance', (e) => {

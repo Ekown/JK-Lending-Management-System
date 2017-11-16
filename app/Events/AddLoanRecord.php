@@ -56,10 +56,13 @@ class AddLoanRecord implements ShouldBroadcast
             }
         }
 
+        // Compute the due date of the loan
         $dueDate = getDueDate((int)Carbon::now()->day, (float)$loan->term, $finalRemittanceDateArray, 
             (int)$loan->term_type_id);
 
-        (new LoanController)->updateDueDate($loan->id, $dueDate->format('Y-m-d'));
+        // Update the due date of the loan if it is computable
+        if($dueDate != null)
+            (new LoanController)->updateDueDate($loan->id, $dueDate->format('Y-m-d'));
     }
 
     /**

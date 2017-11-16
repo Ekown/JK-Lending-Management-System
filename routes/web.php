@@ -118,6 +118,9 @@ Route::post('get/all_borrowers', 'DatatableController@showMasterBorrowerList')->
 Route::post('get/borrowers_by_company', 'BorrowerController@getBorrowersByCompany')
 		->name('getBorrowersByCompany');
 
+// AJAX request fo the editing the due date of a loan
+Route::post('loan/record/{loan}/edit/duedate/{date}', 'LoanController@updateDueDate');
+
 // AJAX request for getting loan remittances by loan
 Route::post('loan/record/{loan}/remittances', 'DatatableController@showLoanRemittances');
 

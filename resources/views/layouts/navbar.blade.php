@@ -78,7 +78,7 @@
             <li class="{{ (set_active('borrowers') || set_active('borrower/*/profile') || set_active('borrower/*/loans') == "active" ? "
             active" : "") }}"> <a href="{{ route('borrowers') }}"><i class="fa fa-user-circle-o" aria-hidden="true"></i><span>Borrowers</span></a></li>
             <li class="{{ (set_active('companies') || set_active('companies/*/*') == "active")? "active" : "" }}"> <a href="{{ route('companies') }}"><i class="fa fa-users" aria-hidden="true"></i><span>Companies</span></a></li>
-            <li class="{{ set_active('') }}"> <a href="login.html"><i class="fa fa-line-chart" aria-hidden="true"></i><span>Summary</span></a></li>
+            <li class="{{ set_active('') }}"> <a href="#"><i class="fa fa-line-chart" aria-hidden="true"></i><span>Summary</span></a></li>
           </ul>
         </div>
       </div>

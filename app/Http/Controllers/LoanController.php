@@ -78,10 +78,11 @@ class LoanController extends Controller
         return view('loans.record')->with('details', $details)->with('totalRemittances', $totalRemittances)->with('loanBalance', $loanBalance);
     }
 
-    public function updateDueDate($id, $date)
+    // Updates the due date of a loan
+    public function updateDueDate($loan, $date)
     {
         $updateDueDate = DB::table('loans')
-                        ->where('id', $id)
+                        ->where('id', $loan)
                         ->update([
                             'due_date' => $date
                         ]);

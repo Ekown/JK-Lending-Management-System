@@ -109,9 +109,6 @@
                 "pageLength" : 15  
             });
 
-            // Instantiate the DatePicker Plugin 
-            $('.datepicker').datepicker();
-
             // Instantiate the Remittance Date Dropdown
             $('#addRemittanceDate1, #addRemittanceDate2').selectize({
                 // Enable the user to add new remittance dates into the dropdown

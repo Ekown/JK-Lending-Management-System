@@ -176,3 +176,15 @@ h1 {
 {
   display: inline-block !important;
 }
+
+/* Datatable Expand Buttons CSS */
+
+td.details-control {
+    text-align:center;
+    color:forestgreen;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    text-align:center; 
+    color:red;
+}

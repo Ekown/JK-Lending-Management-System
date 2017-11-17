@@ -52,9 +52,21 @@ class DatatableController extends Controller
                                         'cash_advances.cash_advance_amount_id', '=', 
                                         'cash_advance_amount.id')
                                     ->where('cash_advances.loan_id', $loan_id)
-                                    ->select('cash_advance_amount.date', 'cash_advance_amount.amount');
+                                    ->select('cash_advance_amount.date', 'cash_advance_amount.amount', 'cash_advances.loan_id');
 
         return DataTables::of($getCashAdvanceByLoan)->make();
+    }
+
+    public function showCashAdvancesRemittances($loan_id)
+    {
+        $getCashAdvanceRemitByLoan = DB::table('cash_advance_remittances')
+                                    ->leftJoin('cash_advance', 
+                                        'cash_advance_remittances.id', '=', 
+                                        'cash_advance.cash_advance_remittance_id')
+                                    ->where('cash_advances.loan_id', $loan_id)
+                                    ->select('cash_advance_remittances.date', 'cash_advance_remittances.amount');
+
+        return Response::json($getCashAdvanceRemitByLoan);
     }
 
     public function showFinishedLoanMasterList()

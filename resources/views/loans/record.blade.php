@@ -171,6 +171,7 @@
                   <table class="cashAdvancesDatatable table table-hover" cellspacing="0" role="grid" style="width:100%">
                     <thead class="thead-dark">
                       <tr>
+                        <th></th>
                         <th>Date</th>
                         <th>Cash Advance Amount</th>
                       </tr>
@@ -250,6 +251,35 @@
           $('#loan_status').attr("class", "badge badge-success");
           $('.remitLoan').attr("hidden", "hidden");
         }
+      }
+
+      function format(d){
+        console.log(d.loan_id);
+         // `d` is the original data object for the row
+         var tableHtml = function() {
+            var tmp = '';
+
+            tmp = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">';
+
+            // for(var i = 0; i < )
+            // {
+
+            // }
+            //          '<tr>' +
+            //              '<td>Date:</td>' +
+            //              '<td>' + d.name + '</td>' +
+            //          '</tr>' +
+            //       '</table>';
+
+            return tmp;
+         }();
+
+         return tableHtml;  
+      }
+
+      function alert(msg) {
+          $('<div class="alert">' 
+            + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').appendTo('#flash-message').trigger('showalert');           
       }
 
 			// Instantiate the server side Loan Remittance DataTable
@@ -370,7 +400,7 @@
       });
 
       // Instantiate the server side Cash Advances DataTable
-      $('.cashAdvancesDatatable').DataTable({
+      var cashAdvanceTable = $('.cashAdvancesDatatable').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
@@ -388,6 +418,16 @@
             }
         ],
         "columns": [
+            {
+              "className": 'details-control',
+              "orderable": false,
+              "data": null,
+              "defaultContent": '',
+              "render": function () {
+                  return '<i class="fa fa-plus-square" aria-hidden="true"></i>';
+              },
+              width:"15px"
+            },
             { "data": "date", "name" : "cash_advance_amount.date" },
             { "data": "amount", "name" : "cash_advance_amount.amount" }
         ],
@@ -461,17 +501,6 @@
                       $( api.table().footer() ).find('th').eq(2).html( "Total Remaining Balance: ");
                       $( api.table().footer() ).find('th').eq(3).html("{{ peso() }}" + res.toFixed(2));
 
-                    if(lateRemittances != 0 && lateRemittances != null)
-                    {
-                      console.log(lateRemittances);
-                      $( api.table().footer() ).find('th').eq(4).html( "Total Late Remittance Amount: ");
-                      $( api.table().footer() ).find('th').eq(5).html("{{ peso() }}" + lateRemittances.toFixed(2));
-                    }
-                    else
-                    {
-                      console.log("Hide the late");
-                      $('.text-danger').attr("hidden", "hidden");
-                    } 
         },
         "pageLength": 10,
         "order": [[ 1, "asc" ]]
@@ -483,9 +512,9 @@
 
       updateBadge();
 
-      $('.datepicker').datepicker();
+      /********************* EVENT LISTENERS *********************/
 
-      // Submit a POST AJAX request to add the loan record
+       // Submit a POST AJAX request to add the loan record
       $('#submitRemitForm').click(function() {
 
         // Hide the modal after submitting
@@ -505,6 +534,7 @@
         });
       });
 
+      // Submit a POST AJAX request to add the cash advance record
       $('#addCashAdvanceSubmitForm').click(function() {
         // Hide the modal after submitting
         $('#addCashAdvanceModal').modal('hide');
@@ -521,14 +551,7 @@
             console.log("There was an error encountered while adding the cash advance.");
           }
         });
-
       });
-
-      function alert(msg)
-      {
-          $('<div class="alert">' 
-            + msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').appendTo('#flash-message').trigger('showalert');           
-      }
 
       $(document).on('showalert', '.alert', function(){
               window.setTimeout($.proxy(function() {
@@ -536,7 +559,7 @@
                       $(this).remove(); 
                   });
               }, this), 5000);
-          });
+      });
 
       // Show the due date modal form when the badge is clicked
       $('#due_date').on('click', function(){
@@ -561,6 +584,34 @@
             console.log("An error was encountered when updating the due date. Try again.");
           }
         });
+      });
+
+      // Add event listener for opening and closing details
+      $('.cashAdvancesDatatable tbody').on('click', 'td.details-control', function () {
+          var tr = $(this).closest('tr');
+          var tdi = tr.find("i.fa");
+          var row = cashAdvanceTable.row(tr);
+
+          if (row.child.isShown()) {
+              // This row is already open - close it
+              row.child.hide();
+              tr.removeClass('shown');
+              tdi.first().removeClass('fa-minus-square');
+              tdi.first().addClass('fa-plus-square');
+          }
+          else {
+              // Open this row
+              row.child(format(row.data())).show();
+              tr.addClass('shown');
+              tdi.first().removeClass('fa-plus-square');
+              tdi.first().addClass('fa-minus-square');
+          }
+      });
+
+      cashAdvanceTable.on("user-select", function (e, dt, type, cell, originalEvent) {
+          if ($(cell.node()).hasClass("details-control")) {
+              e.preventDefault();
+          }
       });
 
       Echo.private(`loanChannel.{{ $details->first()->id }}`)

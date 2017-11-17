@@ -35,6 +35,10 @@ Broadcast::channel('borrowerMasterListChannel', function () {
     return true;
 });
 
+Broadcast::channel('cashAdvanceMasterListChannel', function () {
+    return true;
+});
+
 Broadcast::channel('companyChannel.{companyId}', function () {
     return true;
 });

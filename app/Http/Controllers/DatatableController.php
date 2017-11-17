@@ -45,6 +45,18 @@ class DatatableController extends Controller
         return DataTables::of($query)->make();
     }
 
+    public function showCashAdvances($loan_id)
+    {
+        $getCashAdvanceByLoan = DB::table('cash_advances')
+                                    ->leftJoin('cash_advance_amount', 
+                                        'cash_advances.cash_advance_amount_id', '=', 
+                                        'cash_advance_amount.id')
+                                    ->where('cash_advances.loan_id', $loan_id)
+                                    ->select('cash_advance_amount.date', 'cash_advance_amount.amount');
+
+        return DataTables::of($getCashAdvanceByLoan)->make();
+    }
+
     public function showFinishedLoanMasterList()
     {
         // Gets all the latest finished ledgers with their associated column data from other tables
@@ -102,11 +114,11 @@ class DatatableController extends Controller
     {
         // Gets all the latest cash advances with their associated column data from other tables
         $query = DB::table('cash_advances')
-                    ->leftJoin('loans', 'cash_advances.id', '=', 'loans.cash_advance_id')
-                    ->leftJoin('borrowers', 'ledgers.borrower_id', '=', 'borrowers.id')
-                    ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')    
-                    ->select('cash_advances.*', 'borrowers.borrower_name', 'companies.company_name')
-                    ->latest('cash_advances.cash_advance_date');
+                    ->leftJoin('loans', 'cash_advances.loan_id', '=', 'loans.id')
+                    ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
+                    ->leftJoin('companies', 'borrowers.company_id', '=', 'companies.id')
+                    ->leftJoin('cash_advance_amount', 'cash_advances.cash_advance_amount_id', '=', 'cash_advance_amount.id')    
+                    ->select('cash_advances.id', 'cash_advances.loan_id', 'borrowers.name as borrower', 'companies.name as company', 'cash_advance_amount.amount', 'cash_advance_amount.date');
 
         // Returns an instance of the DataTable class with the cash advance data
         return DataTables::of($query)->make();

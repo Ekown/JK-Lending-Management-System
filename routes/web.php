@@ -102,11 +102,17 @@ Route::post('remit/loan', 'RemittanceController@createLoan')->name('remitLoan');
 // AJAX request for the Add Borrower 
 Route::post('add/borrower', 'BorrowerController@create')->name('addBorrower');
 
-// AJAX request for the Add Company
+// AJAX request for adding a new company
 Route::post('add/company', 'CompanyController@create')->name('addCompany'); 
 
 // AJAX request for checking if the company is unique
 Route::post('add/company/check/company', 'AjaxController@checkIfUniqueCompany');
+
+// AJAX request for adding a new cash advance
+Route::post('add/cash_advance', 'CashAdvanceController@create')->name('addCashAdvance'); 
+
+// AJAX request for getting cash advances by loan
+Route::post('loan/record/{loan}/cash_advances', 'DatatableController@showCashAdvances');
 
 // AJAX request for the getting all the companies
 Route::post('get/companies', 'CompanyController@getCompanies')->name('getCompaniesForDropdown');

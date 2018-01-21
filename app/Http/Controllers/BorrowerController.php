@@ -25,9 +25,9 @@ class BorrowerController extends Controller
         // Insert the new borrower record into the database
         $newBorrower = DB::table('borrowers')->insertGetId(
             [
-                'name' => $request->addBorrowerFormName,
+                'name' => (isset($request->addBorrowerFormName)?$request->addBorrowerFormName:$request->addBorrowerName1),
                 // 'company_id' => ($request->addBorrowerFormCompany == "0" ?null: $request->addBorrowerFormCompany)
-                'company_id' => $request->addBorrowerFormCompany
+                'company_id' => (isset($request->addBorrowerFormCompany)?$request->addBorrowerFormCompany:$request->addBorrowerCompany1)
             ]
         );
 
@@ -168,11 +168,11 @@ class BorrowerController extends Controller
         return Response::json(
             DB::table('borrowers')
                 ->where('id', $id)
-                ->update(
-                    ['name' => $request->editBorrowerName],
-                    ['contact_details' => $request->editBorrowerCompany],
-                    ['address' => $request->editBorrowerAddress]
-                )
+                ->update([   
+                    'name' => $request->editBorrowerName,
+                    'contact_details' => $request->editBorrowerContact,
+                    'address' => $request->editBorrowerAddress
+                ])
         );
     }	
 

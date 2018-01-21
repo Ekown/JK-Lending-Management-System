@@ -1,4 +1,5 @@
-/node_modulesx
+/node_modules-prod
+/node_modules/
 /public/hot
 /public/storage
 /storage/*.key
@@ -12,3 +13,9 @@ yarn-error.log
 LMS.zip
 /public/plugins/jquery-validation/demo
 /public/plugins/jquery-validation/test
+node_modules/http-parser-js/package.json
+node_modules/http-parser-js/package.json
+node_modules/laravel-echo/package.json
+node_modules/pusher-js/package.json
+node_modules/pusher-js/node_modules/faye-websocket/package.json
+node_modules/websocket-driver/package.json

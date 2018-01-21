@@ -60,6 +60,8 @@ function get_deduction($id)
 */
 function getDueDate($day, $term, $dates = null, $type = 1)
 {
+    Carbon::setTestNow($day);
+
     $nextRemittance = null;
 
     // If the term type of the loan is 'by month'
@@ -74,7 +76,7 @@ function getDueDate($day, $term, $dates = null, $type = 1)
             // Loop through the array of dates to check the remittance date
             foreach($dates as $date)
             {
-                if( ( (int)$date - (int)$day ) > 0 )
+                if( ( (int)$date - (int)$day->day ) > 0 )
                 {
                     $nextRemittance = $date; 
 
@@ -87,8 +89,8 @@ function getDueDate($day, $term, $dates = null, $type = 1)
                 $nextRemittance = $dates[0];
 
             // Adjust the current date to the first remittance date
-            $remittanceDate = ($day > $nextRemittance) ? 
-            date('Y-m', strtotime('+1 month')).'-'.$nextRemittance : date('Y-m').'-'.$nextRemittance;
+            $remittanceDate = ($day->day > $nextRemittance) ? 
+            date((string)$day->year + '-' + (string)$day->month, strtotime('+1 month')).'-'.$nextRemittance : date((string)$day->year + '-' + (string)$day->month).'-'.$nextRemittance;
 
             // Add the term to the first remittance date to get the due date
             $remittanceDate = Carbon::parse($remittanceDate)->addMonths(floor($term));
@@ -136,7 +138,7 @@ function getDueDate($day, $term, $dates = null, $type = 1)
             // Loop through the array of dates to check the remittance date
             foreach($dates as $date)
             {
-                if( ( (int)$date - (int)$day ) >= 0 )
+                if( ( (int)$date - (int)$day->day ) >= 0 )
                 {
                     $nextRemittance = (int)$date; 
 
@@ -150,8 +152,8 @@ function getDueDate($day, $term, $dates = null, $type = 1)
                 $nextRemittance = (int)$dates[0];
 
             // Adjust the current date to the first remittance date
-            $remittanceDate = ($day > $nextRemittance) ? 
-            date('Y-m', strtotime('+1 month')).'-'.$nextRemittance : date('Y-m').'-'.$nextRemittance;
+            $remittanceDate = ($day->day > $nextRemittance) ? 
+            date($day->year + '-' + $day->month, strtotime('+1 month')).'-'.$nextRemittance : date($day->year + '-' + $day->month).'-'.$nextRemittance;
             $remittanceDate = Carbon::parse($remittanceDate);
 
             // Loop if the term is more than 1 give
@@ -340,7 +342,7 @@ function ready_active_table()
                 }
                 
                 // Fire the remittance event to change the loan's loan status badge
-                event(new Remittance($loan->loan_id, 0.00, false));
+                //event(new Remittance($loan->loan_id, null, false));
             }
         } 
     }

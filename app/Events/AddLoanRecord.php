@@ -36,7 +36,7 @@ class AddLoanRecord implements ShouldBroadcast
         $getBorrowerName = DB::table('loans')
                         ->leftJoin('borrowers', 'loans.borrower_id', '=', 'borrowers.id')
                         ->where('loans.id', $this->loanId)
-                        ->select('borrowers.name')
+                        ->select('borrowers.name', 'loans.created_at')
                         ->first();
 
         // Store the borrower's name
@@ -46,23 +46,23 @@ class AddLoanRecord implements ShouldBroadcast
 
         $remittanceDateArray = (new RemittanceController)->getDates();
 
-        foreach ($remittanceDateArray as $date) 
-        {
-            if($loan->remittance_date_id == $date->id) 
-            {
-                $finalRemittanceDateArray = explode('/', $date->remittance_date);
+        // foreach ($remittanceDateArray as $date) 
+        // {
+        //     if($loan->remittance_date_id == $date->id) 
+        //     {
+        //         $finalRemittanceDateArray = explode('/', $date->remittance_date);
 
-                break;
-            }
-        }
+        //         break;
+        //     }
+        // }
 
-        // Compute the due date of the loan
-        $dueDate = getDueDate((int)Carbon::now()->day, (float)$loan->term, $finalRemittanceDateArray, 
-            (int)$loan->term_type_id);
+        // // Compute the due date of the loan
+        // $dueDate = getDueDate((int)(Carbon::parse($getBorrowerName->created_at)), (float)$loan->term, $finalRemittanceDateArray, 
+        //     (int)$loan->term_type_id);
 
-        // Update the due date of the loan if it is computable
-        if($dueDate != null)
-            (new LoanController)->updateDueDate($loan->id, $dueDate->format('Y-m-d'));
+        // // Update the due date of the loan if it is computable
+        // if($dueDate != null)
+        //     (new LoanController)->updateDueDate($loan->id, $dueDate->format('Y-m-d'));
     }
 
     /**

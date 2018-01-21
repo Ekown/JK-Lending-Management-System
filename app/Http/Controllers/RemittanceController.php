@@ -38,6 +38,15 @@ class RemittanceController extends Controller
     	return Response::json($query);	
     }
 
+    public function deleteRemittance(Request $request)
+    {
+        $deleteRemittance = DB::table('loan_remittances')
+                            ->where('id', $request->remittance_id)
+                            ->delete();
+
+        return Response::json($request->remittance_id);
+    }
+
     public function getCorrespondingDate()
     {
         return Response::json(DB::table('remittance_dates')

@@ -43,9 +43,6 @@ $(function () {
     $("#loader-wrapper").fadeOut('slow');
 });
 
-// Instantiate the bootstrap datepicker API
-$('.datepicker').datepicker();
-
 
 
 

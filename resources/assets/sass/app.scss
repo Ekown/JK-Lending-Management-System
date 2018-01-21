@@ -170,6 +170,11 @@ h1 {
   }
 }
 
+tr
+{
+  cursor: pointer !important;
+}
+
 /* Datatable Buttons CSS */
 
 .dt-buttons
@@ -188,3 +193,5 @@ tr.shown td.details-control {
     text-align:center; 
     color:red;
 }
+
+

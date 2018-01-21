@@ -14,6 +14,16 @@ class LoanController extends Controller
         $this->middleware('auth');
     }
 
+    // Deletes the given loan
+    public function deleteLoan($loan_id)
+    {
+        $deleteLoan = DB::table('loans')
+                        ->where('id', $loan_id)
+                        ->delete();
+
+        return Response::json($deleteLoan);
+    }
+
     public function getLoanDetails($loan_id)
     {
     	// Gets all the latest ledgers with their associated column data from other tables

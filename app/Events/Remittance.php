@@ -32,7 +32,7 @@ class Remittance implements ShouldBroadcast
     {
         $this->loanId = $loanId;
 
-        if($remittance != 0.00)
+        if($remittance != null)
             $this->remittanceAmount = $remittance->amount;
         
         $this->isRemittance = $isRemittance;
@@ -54,10 +54,13 @@ class Remittance implements ShouldBroadcast
                                     ['date', $remittance->date]
                                 ])  
                                 ->select('id')
-                                ->exists();     
+                                ->exists();   
+
+            // Check if the remittance is a past remittance
+            $checkifPastRemit = (Carbon::parse($remittance->date) <= Carbon::today());  
 
             // If the current loan is not active or late, then this is an early remittance
-            if($checkIfActive == false && $checkIfRemitted == false)
+            if($checkIfActive == false && $checkIfRemitted == false && $checkifPastRemit == false)
             {
                 // Add the remittance to the early remittance table
                 $addToEarly = DB::table('early_loan_remittances')

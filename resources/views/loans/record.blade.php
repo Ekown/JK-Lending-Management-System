@@ -71,12 +71,61 @@
     </div> 
   </div>
 
+  <div class="modal fade" id="deleteLoanModal" role="dialog" arialabeledby="deleteLoanModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteLoanModalTitle">Delete This Loan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this loan?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" id="deleteLoanModalConfirm">Yes</button>
+        </div>
+      </div>    
+    </div> 
+  </div>
+
+  <div class="modal fade" id="deleteLoanRemittanceModal" role="dialog" arialabeledby="deleteLoanRemittanceModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteLoanRemittanceModalTitle">Delete This Loan Remittance</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this loan remittance?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" id="deleteLoanModalRemittanceConfirm">Yes</button>
+        </div>
+      </div>    
+    </div> 
+  </div>
+
   <section class="charts">
 
     <div class="container-fluid">
 
       <header>
-        <h1 class="h1">Loan #{{ $details->first()->id }}</h1>
+        <div class="row">
+          <div class="col-xs-11 col-sm-11 col-md-11 col-lg-11 col-xl-11">
+            <h1 class="h1">Loan #{{ $details->first()->id }}</h1>
+          </div>
+          
+          {{-- Delete Loan Button --}}
+          <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+            <span id="deleteLoanButton" data-toggle="tooltip" data-placement="left" title="Delete this loan"><button class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></span>
+          </div>
+        </div>
       </header>
 
       <div class="row">
@@ -129,12 +178,13 @@
               Loan Remittances
             </div>
             <div class="card-body">
-              <table class="loanRemitDatatable table table-hover" cellspacing="0" role="grid" style="width:100%">
+              <table class="loanRemitDatatable table" cellspacing="0" role="grid" style="width:100%">
                 <thead class="thead-dark">
                   <tr>
                     <th>#</th>
                     <th>Date of Remittance</th>
                     <th>Remittance Amount</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -143,13 +193,16 @@
                   <tr class="totalSumColumn">
                     <th colspan="2"></th>
                     <th id="totalSumColumn"></th>
+                    <th></th>
                   </tr>
                   <tr class="totalSumColumn">
                     <th colspan="2" style="border: none !important"></th>
                     <th id="totalSumColumn" style="border: none !important"></th>
+                    <th style="border: none !important"></th>
                   </tr>
                   <tr class="text-danger">
                     <th colspan="2" style="border: none !important"></th>
+                    <th style="border: none !important"></th>
                     <th style="border: none !important"></th>
                   </tr>
                 </tfoot>
@@ -226,7 +279,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </section> 
 
@@ -283,7 +335,7 @@
       }
 
 			// Instantiate the server side Loan Remittance DataTable
-      $('.loanRemitDatatable').DataTable({
+      var loanRemittanceTable = $('.loanRemitDatatable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -304,18 +356,32 @@
                 "columns": [
                     { "data": "id", "name" : "loan_remittances.id" },
                     { "data": "date", "name" : "loan_remittances.date" },
-                    { "data": "amount", "name" : "loan_remittances.amount" }
+                    { "data": "amount", "name" : "loan_remittances.amount" },
+                    { 
+                      "data": null,
+                      "render": function () {
+                        return '<span id="deleteLoanRemittanceButton" data-toggle="tooltip" data-placement="bottom" title="Delete this remittance"><button type="button" class="close" aria-label="Close"><i style="color: red;" class="fa fa-times" aria-hidden="true"></i></button></span>';
+                      },
+                      "orderable": false
+                    }
                 ],
+                select: true,
                 "fnRowCallback" : function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                    $(nRow).find("td:nth-child(4) button").css("float", "unset");
+
                     if(aData != null)
                     {
                       var amount = aData.amount;
+                      var id = aData.id;
                       if(amount != "0")
                           $(nRow).find("td:nth-child(3)").html("{{ peso() }}" + (+amount).toFixed(2));
                       else
                           $(nRow).find("td:nth-child(3)").html("<span style='color:red'>No Remittance</span>");
+
+                      $(nRow).find("td:nth-child(4) button").attr("remittance-id", id);
                       
                       // console.log(nRow);
+
                       return nRow;
                     }
                       
@@ -374,14 +440,14 @@
                       $( api.table().footer() ).find('th').eq(0).html( "Total Remittance Amount: ");
                       $( api.table().footer() ).find('th').eq(1).html("{{ peso() }}" + remittances.toFixed(2));
                     }
-                      $( api.table().footer() ).find('th').eq(2).html( "Total Remaining Balance: ");
-                      $( api.table().footer() ).find('th').eq(3).html("{{ peso() }}" + res.toFixed(2));
+                      $( api.table().footer() ).find('th').eq(3).html( "Total Remaining Balance: ");
+                      $( api.table().footer() ).find('th').eq(4).html("{{ peso() }}" + res.toFixed(2));
 
                     if(lateRemittances != 0 && lateRemittances != null)
                     {
                       console.log(lateRemittances);
-                      $( api.table().footer() ).find('th').eq(4).html( "Total Late Remittance Amount: ");
-                      $( api.table().footer() ).find('th').eq(5).html("{{ peso() }}" + lateRemittances.toFixed(2));
+                      $( api.table().footer() ).find('th').eq(6).html( "Total Late Remittance Amount: ");
+                      $( api.table().footer() ).find('th').eq(7).html("{{ peso() }}" + lateRemittances.toFixed(2));
                     }
                     else
                     {
@@ -563,8 +629,62 @@
 
       // Show the due date modal form when the badge is clicked
       $('#due_date').on('click', function(){
-        $('#dueDateModal').modal('show');
+        if($('#due_date').html() == "No Due Date")
+          $('#dueDateModal').modal('show');
         // console.log('Show the modal');
+      });
+
+      // Show the delete loan modal form 
+      $('#deleteLoanButton').on('click', function(){
+          $('#deleteLoanModal').modal('show');
+        // console.log('Show the modal');
+      });
+
+      // Show the delete loan remittance modal form 
+      $('.loanRemitDatatable').on( 'click', 'tbody tr td span button', function () {
+          $('#deleteLoanRemittanceModal').modal('show');
+
+          $('.loanRemitDatatable').attr("remittance-id", $(this).attr("remittance-id"));
+
+          // loanRemittanceTable.row( this ).delete( {
+          //     buttons: [
+          //         { label: 'Cancel', fn: function () { this.close(); } },
+          //         'Delete'
+          //     ]
+          // } );
+      } );
+
+      $('#deleteLoanModalConfirm').on('click', function(){
+        $('#deleteLoanModal').modal('hide');
+
+        $.ajax({
+          url: "{{ route('deleteLoan', ['loan_id' => $details->first()->id ]) }}",
+          method: "POST",
+          success: function(data) {
+            console.log(data);
+            window.location = "{{ route('currentLoansList') }}"
+          },
+          error: function(res) {
+            console.log("An error was encountered when deleting this loan.");
+          }
+        });
+      });
+
+      $('#deleteLoanModalRemittanceConfirm').on('click', function(){
+        $('#deleteLoanRemittanceModal').modal('hide');
+
+        $.ajax({
+          url: "{{ route('deleteLoanRemittance') }}",
+          data: { remittance_id :  $('.loanRemitDatatable').attr("remittance-id") },
+          method: "POST",
+          success: function(data) {
+            $('.loanRemitDatatable').DataTable().draw(false);
+            alert("Remittance #" + $('.loanRemitDatatable').attr("remittance-id") + " has been deleted" );
+          },
+          error: function(res) {
+            console.log("An error was encountered when deleting this loan.");
+          }
+        });
       });
 
       // Submit the form when the submit button is clicked
@@ -614,6 +734,12 @@
           }
       });
 
+      // Instantiate the bootstrap datepicker API
+      $('.datepicker').datepicker();
+
+      // Render any tooltips in the page
+      $('[data-toggle="tooltip"]').tooltip();
+
       Echo.private(`loanChannel.{{ $details->first()->id }}`)
       .listen('Remittance', (e) => {
           // console.log(e);
@@ -627,9 +753,7 @@
           if(e.updateLoanStatus == "Paid")
             alert('A remittance was made today. This loan is now fully paid and moved to the Finished Loans.');
           else if(e.updateLoanStatus == "Not Fully Paid")
-            alert("A remittance was made today. This loan's late balance has been paid.");
-          else
-            alert('A remittance was made today.');
+            alert("A remittance was made today.");
       })
       .listen('AddCashAdvance', (e) => {
           // console.log(e);

@@ -9,6 +9,9 @@
 			</div>
 			<div class="modal-body" style="font-size: 0.9rem !important;">
         <form id="editBorrowerProfileForm" novalidate>
+
+          {{ csrf_field() }}
+
         		<div class="form-group">
               <label>Name</label>
               <input type="text" id="editBorrowerName" name="editBorrowerName" class="form-control">

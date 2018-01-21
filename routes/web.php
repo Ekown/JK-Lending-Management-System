@@ -93,7 +93,13 @@ Route::post('master/c_list', 'DatatableController@showMasterCompanyList')->name(
 // AJAX request for the Add Loan Record
 Route::post('add/loan', 'AjaxController@createLoan')->name('addLoan');
 
-// AJAX request for the Add Loan Record
+// AJAX request for the Delete Loan Record
+Route::post('delete/loan/{loan_id}', 'LoanController@deleteLoan')->name('deleteLoan');
+
+// AJAX request for the Delete Loan Remittance Record
+Route::post('delete/remit', 'RemittanceController@deleteRemittance')->name('deleteLoanRemittance');
+
+// AJAX request for the Checking if the Borrower is unique
 Route::post('add/loan/check/borrower', 'AjaxController@checkIfUniqueBorrower');
 
 // AJAX request fo the Remit Loan Record
